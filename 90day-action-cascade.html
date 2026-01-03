@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>90-Day Action Cascade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --priority-high: #ef4444;
+            --priority-medium: #f59e0b;
+            --priority-low: #10b981;
+            --border-color: #333333;
+        }
+
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .domain-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .domain-content {
+            display: none;
+        }
+
+        .domain-content.active {
+            display: block;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .period-btn {
+            flex: 1;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .period-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .week-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .week-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .week-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .week-dates {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .week-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transition: width 0.3s ease;
+        }
+
+        .tasks-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .task-item {
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            gap: 12px;
+            align-items: start;
+            border-left: 4px solid transparent;
+        }
+
+        .task-item.priority-high {
+            border-left-color: var(--priority-high);
+        }
+
+        .task-item.priority-medium {
+            border-left-color: var(--priority-medium);
+        }
+
+        .task-item.priority-low {
+            border-left-color: var(--priority-low);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-content input[type="text"],
+        .task-content textarea {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .task-content textarea {
+            min-height: 50px;
+            resize: vertical;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .task-meta select,
+        .task-meta input {
+            padding: 4px 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .btn-add {
+            background: var(--accent-success);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .overview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .period-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>90-Day Action Cascade</h1>
+                <p style="color: var(--text-secondary); margin-top: 5px;">Time-bound execution plan with weekly accountability</p>
+            </div>
+            <div class="header-controls">
+                <button class="btn" onclick="toggleTheme()">☀️ Light Mode</button>
+                <button class="btn" onclick="saveAll()">💾 Save All</button>
+                <button class="btn" onclick="exportData()">📊 Export</button>
+                <a href="executive-command-center.html" class="btn">← Dashboard</a>
+            </div>
+        </header>
+
+        <!-- Domain Tabs -->
+        <div class="domain-tabs">
+            <button class="tab active" onclick="switchTab('builders')">Builder's Conference</button>
+            <button class="tab" onclick="switchTab('professional')">Professional/Career</button>
+            <button class="tab" onclick="switchTab('chess')">Chess Not Checkers</button>
+        </div>
+
+        <!-- Builder's Conference -->
+        <div id="builders" class="domain-content active">
+            <div class="overview-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="bc-total-tasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="bc-completed-tasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="bc-high-priority">0</div>
+                    <div class="stat-label">High Priority</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="bc-overall-progress">0%</div>
+                    <div class="stat-label">Overall Progress</div>
+                </div>
+            </div>
+
+            <div class="period-selector">
+                <button class="period-btn active" onclick="switchPeriod('builders', 'days30')">Days 1-30</button>
+                <button class="period-btn" onclick="switchPeriod('builders', 'days60')">Days 31-60</button>
+                <button class="period-btn" onclick="switchPeriod('builders', 'days90')">Days 61-90</button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <button onclick="openImportModal('builders')" style="background: var(--accent-secondary); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
+                    📥 Import from Strategy & RACI
+                </button>
+                <span style="margin-left: 15px; color: var(--text-secondary); font-size: 0.85rem;">Pull incomplete milestones and tasks from other tools</span>
+            </div>
+
+            <div id="bc-weeks-container"></div>
+        </div>
+
+        <!-- Professional/Career -->
+        <div id="professional" class="domain-content">
+            <div class="overview-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="prof-total-tasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="prof-completed-tasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="prof-high-priority">0</div>
+                    <div class="stat-label">High Priority</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="prof-overall-progress">0%</div>
+                    <div class="stat-label">Overall Progress</div>
+                </div>
+            </div>
+
+            <div class="period-selector">
+                <button class="period-btn active" onclick="switchPeriod('professional', 'days30')">Days 1-30</button>
+                <button class="period-btn" onclick="switchPeriod('professional', 'days60')">Days 31-60</button>
+                <button class="period-btn" onclick="switchPeriod('professional', 'days90')">Days 61-90</button>
+            </div>
+
+            <div id="prof-weeks-container"></div>
+        </div>
+
+        <!-- Chess Not Checkers -->
+        <div id="chess" class="domain-content">
+            <div class="overview-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="cnc-total-tasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="cnc-completed-tasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="cnc-high-priority">0</div>
+                    <div class="stat-label">High Priority</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="cnc-overall-progress">0%</div>
+                    <div class="stat-label">Overall Progress</div>
+                </div>
+            </div>
+
+            <div class="period-selector">
+                <button class="period-btn active" onclick="switchPeriod('chess', 'days30')">Days 1-30</button>
+                <button class="period-btn" onclick="switchPeriod('chess', 'days60')">Days 31-60</button>
+                <button class="period-btn" onclick="switchPeriod('chess', 'days90')">Days 61-90</button>
+            </div>
+
+            <div id="cnc-weeks-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = '90day_action_cascade';
+        let currentPeriod = { builders: 'days30', professional: 'days30', chess: 'days30' };
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {
+                builders: { days30: createWeeks(4), days60: createWeeks(4), days90: createWeeks(4) },
+                professional: { days30: createWeeks(4), days60: createWeeks(4), days90: createWeeks(4) },
+                chess: { days30: createWeeks(4), days60: createWeeks(4), days90: createWeeks(4) }
+            };
+        }
+
+        function createWeeks(count) {
+            const weeks = [];
+            for (let i = 0; i < count; i++) {
+                weeks.push({ tasks: [] });
+            }
+            return weeks;
+        }
+
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function switchTab(domain) {
+            document.querySelectorAll('.domain-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(domain).classList.add('active');
+            event.target.classList.add('active');
+            renderWeeks(domain);
+        }
+
+        function switchPeriod(domain, period) {
+            currentPeriod[domain] = period;
+            const buttons = event.target.parentElement.querySelectorAll('.period-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderWeeks(domain);
+        }
+
+        function addTask(domain, weekIndex) {
+            const data = loadData();
+            const period = currentPeriod[domain];
+            data[domain][period][weekIndex].tasks.push({
+                description: '',
+                details: '',
+                priority: 'medium',
+                owner: '',
+                dependency: '',
+                completed: false
+            });
+            saveData(data);
+            renderWeeks(domain);
+        }
+
+        function deleteTask(domain, weekIndex, taskIndex) {
+            const data = loadData();
+            const period = currentPeriod[domain];
+            data[domain][period][weekIndex].tasks.splice(taskIndex, 1);
+            saveData(data);
+            renderWeeks(domain);
+        }
+
+        function updateTask(domain, weekIndex, taskIndex, field, value) {
+            const data = loadData();
+            const period = currentPeriod[domain];
+            data[domain][period][weekIndex].tasks[taskIndex][field] = value;
+            saveData(data);
+            updateStats(domain);
+        }
+
+        function renderWeeks(domain) {
+            const data = loadData();
+            const period = currentPeriod[domain];
+            const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
+            const container = document.getElementById(`${prefix}-weeks-container`);
+            
+            const periodLabels = {
+                days30: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                days60: ['Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                days90: ['Week 9', 'Week 10', 'Week 11', 'Week 12']
+            };
+
+            container.innerHTML = '';
+            data[domain][period].forEach((week, weekIndex) => {
+                const completed = week.tasks.filter(t => t.completed).length;
+                const total = week.tasks.length;
+                const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                let html = `
+                    <div class="week-card">
+                        <div class="week-header">
+                            <div class="week-title">${periodLabels[period][weekIndex]}</div>
+                            <div class="week-dates">Days ${weekIndex * 7 + 1 + (period === 'days60' ? 30 : period === 'days90' ? 60 : 0)}-${(weekIndex + 1) * 7 + (period === 'days60' ? 30 : period === 'days90' ? 60 : 0)}</div>
+                        </div>
+                        <div class="week-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                            <span style="font-weight: 600; font-size: 0.9rem;">${progress}%</span>
+                        </div>
+                        <div class="tasks-list">
+                `;
+
+                week.tasks.forEach((task, taskIndex) => {
+                    html += `
+                        <div class="task-item priority-${task.priority}">
+                            <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}
+                                   onchange="updateTask('${domain}', ${weekIndex}, ${taskIndex}, 'completed', this.checked)">
+                            <div class="task-content">
+                                <input type="text" value="${task.description}"
+                                       onchange="updateTask('${domain}', ${weekIndex}, ${taskIndex}, 'description', this.value)"
+                                       placeholder="Task description">
+                                <textarea onchange="updateTask('${domain}', ${weekIndex}, ${taskIndex}, 'details', this.value)"
+                                          placeholder="Additional details">${task.details}</textarea>
+                                <div class="task-meta">
+                                    <select onchange="updateTask('${domain}', ${weekIndex}, ${taskIndex}, 'priority', this.value)">
+                                        <option value="high" ${task.priority === 'high' ? 'selected' : ''}>🔴 High Priority</option>
+                                        <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>🟡 Medium Priority</option>
+                                        <option value="low" ${task.priority === 'low' ? 'selected' : ''}>🟢 Low Priority</option>
+                                    </select>
+                                    <input type="text" value="${task.owner}"
+                                           onchange="updateTask('${domain}', ${weekIndex}, ${taskIndex}, 'owner', this.value)"
+                                           placeholder="Owner">
+                                    <input type="text" value="${task.dependency}"
+                                           onchange="updateTask('${domain}', ${weekIndex}, ${taskIndex}, 'dependency', this.value)"
+                                           placeholder="Depends on...">
+                                </div>
+                            </div>
+                            <button class="btn-small btn-delete" onclick="deleteTask('${domain}', ${weekIndex}, ${taskIndex})">Delete</button>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                        <button class="btn-add" onclick="addTask('${domain}', ${weekIndex})">+ Add Task</button>
+                    </div>
+                `;
+
+                container.innerHTML += html;
+            });
+
+            updateStats(domain);
+        }
+
+        function updateStats(domain) {
+            const data = loadData();
+            const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
+            
+            let totalTasks = 0;
+            let completedTasks = 0;
+            let highPriority = 0;
+
+            ['days30', 'days60', 'days90'].forEach(period => {
+                data[domain][period].forEach(week => {
+                    totalTasks += week.tasks.length;
+                    completedTasks += week.tasks.filter(t => t.completed).length;
+                    highPriority += week.tasks.filter(t => t.priority === 'high').length;
+                });
+            });
+
+            const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+            document.getElementById(`${prefix}-total-tasks`).textContent = totalTasks;
+            document.getElementById(`${prefix}-completed-tasks`).textContent = completedTasks;
+            document.getElementById(`${prefix}-high-priority`).textContent = highPriority;
+            document.getElementById(`${prefix}-overall-progress`).textContent = progress + '%';
+        }
+
+        function saveAll() {
+            alert('✅ All data saved successfully!');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.querySelector('.header-controls .btn');
+            btn.textContent = document.body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        function exportData() {
+            const data = loadData();
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `90day-action-cascade-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        // Import from other tools functionality
+        let currentImportDomain = null;
+        let importableItems = [];
+
+        function loadExternalData(key) {
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : null;
+        }
+
+        function openImportModal(domain) {
+            currentImportDomain = domain;
+            importableItems = [];
+
+            // Load from Strategy Deployment Matrix
+            const strategyData = loadExternalData('strategy_deployment_matrix');
+            if (strategyData && strategyData[domain]) {
+                strategyData[domain].milestones.forEach((milestone, idx) => {
+                    if (milestone.text && !milestone.completed) {
+                        importableItems.push({
+                            id: 'strategy-' + idx,
+                            source: 'Strategy Matrix',
+                            description: milestone.text,
+                            priority: milestone.priority || 'q2',
+                            date: milestone.date,
+                            type: 'milestone'
+                        });
+                    }
+                });
+            }
+
+            // Load from RACI Matrix
+            const raciData = loadExternalData('raci_matrix');
+            if (raciData && raciData[domain]) {
+                raciData[domain].tasks.forEach((task, idx) => {
+                    if (task.name && !task.completed) {
+                        importableItems.push({
+                            id: 'raci-' + idx,
+                            source: 'RACI Matrix',
+                            description: task.name,
+                            priority: task.priority || 'q2',
+                            dueDate: task.dueDate,
+                            type: 'task'
+                        });
+                    }
+                });
+            }
+
+            renderImportList();
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+        }
+
+        function renderImportList() {
+            const container = document.getElementById('importItemsList');
+            container.innerHTML = '';
+
+            if (importableItems.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No incomplete items found in Strategy Matrix or RACI Matrix for this domain.</p>';
+                return;
+            }
+
+            importableItems.forEach((item, idx) => {
+                const priorityLabels = {
+                    q1: '🔴 Q1: Urgent & Important',
+                    q2: '🔵 Q2: Important Not Urgent',
+                    q3: '🟡 Q3: Urgent Not Important',
+                    q4: '🟢 Q4: Neither'
+                };
+
+                container.innerHTML += `
+                    <div style="background: var(--bg-secondary); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <label style="display: flex; gap: 15px; cursor: pointer;">
+                            <input type="checkbox" class="import-checkbox" data-idx="${idx}" style="width: 20px; height: 20px;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 5px;">${item.description}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    Source: ${item.source} • ${priorityLabels[item.priority]}
+                                    ${item.date ? ' • Due: ' + item.date : ''}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                `;
+            });
+        }
+
+        function importSelectedItems() {
+            const selectedCheckboxes = document.querySelectorAll('.import-checkbox:checked');
+            const weekIndex = parseInt(document.getElementById('importWeekSelect').value);
+            const data = loadData();
+            const period = currentPeriod[currentImportDomain];
+
+            selectedCheckboxes.forEach(checkbox => {
+                const idx = parseInt(checkbox.dataset.idx);
+                const item = importableItems[idx];
+
+                // Map Eisenhower priority to high/medium/low
+                let priority = 'medium';
+                if (item.priority === 'q1') priority = 'high';
+                else if (item.priority === 'q4') priority = 'low';
+
+                data[currentImportDomain][period][weekIndex].tasks.push({
+                    description: item.description,
+                    details: `Imported from ${item.source}`,
+                    priority: priority,
+                    eisenhower: item.priority,
+                    owner: '',
+                    dependency: '',
+                    completed: false
+                });
+            });
+
+            saveData(data);
+            renderWeeks(currentImportDomain);
+            closeImportModal();
+            
+            alert(`✅ Imported ${selectedCheckboxes.length} item(s) to Week ${weekIndex + 1}`);
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+
+            renderWeeks('builders');
+            renderWeeks('professional');
+            renderWeeks('chess');
+
+            const hash = window.location.hash.substring(1);
+            if (hash && ['builders', 'professional', 'chess'].includes(hash)) {
+                switchTab(hash);
+            }
+        });
+    </script>
+
+    <!-- Import Modal -->
+    <div id="importModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; max-width: 800px; max-height: 80vh; overflow-y: auto; width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 1.5rem; font-weight: 700;">Import from Strategy & RACI</h2>
+                <button onclick="closeImportModal()" style="background: transparent; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: 600; display: block; margin-bottom: 10px;">Select Week to Add To:</label>
+                <select id="importWeekSelect" style="width: 100%; padding: 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary);">
+                    <option value="0">Week 1</option>
+                    <option value="1">Week 2</option>
+                    <option value="2">Week 3</option>
+                    <option value="3">Week 4</option>
+                </select>
+            </div>
+
+            <div id="importItemsList" style="margin-bottom: 20px;"></div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeImportModal()" style="background: var(--bg-secondary); color: var(--text-primary); padding: 10px 20px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;">Cancel</button>
+                <button onclick="importSelectedItems()" style="background: var(--accent-success); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Import Selected</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

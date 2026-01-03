@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eisenhower Matrix - Priority Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --quadrant-1: rgba(239, 68, 68, 0.15);
+            --quadrant-2: rgba(59, 130, 246, 0.15);
+            --quadrant-3: rgba(245, 158, 11, 0.15);
+            --quadrant-4: rgba(16, 185, 129, 0.15);
+            --border-color: #333333;
+        }
+
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --quadrant-1: rgba(239, 68, 68, 0.1);
+            --quadrant-2: rgba(59, 130, 246, 0.1);
+            --quadrant-3: rgba(245, 158, 11, 0.1);
+            --quadrant-4: rgba(16, 185, 129, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .citation {
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .domain-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .matrix-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            min-height: 700px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .axis-label {
+            position: absolute;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .axis-urgent {
+            top: 50%;
+            left: -100px;
+            transform: rotate(-90deg) translateX(-50%);
+            transform-origin: center;
+        }
+
+        .axis-important {
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .quadrant {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quadrant::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        .q1::before { background: var(--quadrant-1); }
+        .q2::before { background: var(--quadrant-2); }
+        .q3::before { background: var(--quadrant-3); }
+        .q4::before { background: var(--quadrant-4); }
+
+        .quadrant-header {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .quadrant-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .q1 .quadrant-title { color: var(--accent-danger); }
+        .q2 .quadrant-title { color: var(--accent-primary); }
+        .q3 .quadrant-title { color: var(--accent-warning); }
+        .q4 .quadrant-title { color: var(--accent-success); }
+
+        .quadrant-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .items-container {
+            position: relative;
+            z-index: 1;
+            min-height: 400px;
+        }
+
+        .item-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .item-dot:hover {
+            transform: scale(1.5);
+            z-index: 100;
+        }
+
+        .dot-builders { background: #8b5cf6; }
+        .dot-professional { background: #3b82f6; }
+        .dot-chess { background: #10b981; }
+
+        .tooltip {
+            position: absolute;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            max-width: 300px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .tooltip-domain {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .tooltip-type {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .type-milestone { background: rgba(139, 92, 246, 0.3); }
+        .type-task { background: rgba(59, 130, 246, 0.3); }
+        .type-action { background: rgba(16, 185, 129, 0.3); }
+
+        .legend {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            .matrix-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .axis-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Eisenhower Priority Matrix</h1>
+                <div class="citation">Strategic priority framework - Eisenhower Decision Matrix (Urgent vs. Important)</div>
+            </div>
+            <div class="header-controls">
+                <button class="btn" onclick="toggleTheme()">☀️ Light Mode</button>
+                <button class="btn" onclick="refreshData()">🔄 Refresh</button>
+                <a href="executive-command-center.html" class="btn">← Dashboard</a>
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="total-items">0</div>
+                <div class="stat-label">Total Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="q1-count" style="color: var(--accent-danger);">0</div>
+                <div class="stat-label">Do First (Q1)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="q2-count" style="color: var(--accent-primary);">0</div>
+                <div class="stat-label">Schedule (Q2)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="q3-count" style="color: var(--accent-warning);">0</div>
+                <div class="stat-label">Delegate (Q3)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="q4-count" style="color: var(--accent-success);">0</div>
+                <div class="stat-label">Eliminate (Q4)</div>
+            </div>
+        </div>
+
+        <!-- Domain Filter -->
+        <div class="domain-filter">
+            <button class="filter-btn active" onclick="filterDomain('all')" id="filter-all">All Domains</button>
+            <button class="filter-btn" onclick="filterDomain('builders')" id="filter-builders">Builder's Conference</button>
+            <button class="filter-btn" onclick="filterDomain('professional')" id="filter-professional">Professional</button>
+            <button class="filter-btn" onclick="filterDomain('chess')" id="filter-chess">Chess Not Checkers</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-title">Legend</div>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-dot dot-builders"></div>
+                    <span>Builder's Conference</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot dot-professional"></div>
+                    <span>Professional/Career</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot dot-chess"></div>
+                    <span>Chess Not Checkers</span>
+                </div>
+                <div class="legend-item">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Hover over dots for details</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Eisenhower Matrix -->
+        <div style="position: relative; margin-left: 100px;">
+            <div class="axis-label axis-urgent">URGENT →</div>
+            <div class="axis-label axis-important">IMPORTANT →</div>
+            
+            <div class="matrix-container">
+                <!-- Q1: Urgent & Important -->
+                <div class="quadrant q1">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Q1: Do First</div>
+                        <div class="quadrant-subtitle">Urgent & Important - Crises, deadlines, critical issues</div>
+                    </div>
+                    <div class="items-container" id="q1-items"></div>
+                </div>
+
+                <!-- Q2: Not Urgent & Important -->
+                <div class="quadrant q2">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Q2: Schedule</div>
+                        <div class="quadrant-subtitle">Important & Not Urgent - Planning, strategy, development</div>
+                    </div>
+                    <div class="items-container" id="q2-items"></div>
+                </div>
+
+                <!-- Q3: Urgent & Not Important -->
+                <div class="quadrant q3">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Q3: Delegate</div>
+                        <div class="quadrant-subtitle">Urgent & Not Important - Interruptions, some calls/emails</div>
+                    </div>
+                    <div class="items-container" id="q3-items"></div>
+                </div>
+
+                <!-- Q4: Not Urgent & Not Important -->
+                <div class="quadrant q4">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Q4: Eliminate</div>
+                        <div class="quadrant-subtitle">Not Urgent & Not Important - Time wasters, distractions</div>
+                    </div>
+                    <div class="items-container" id="q4-items"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="tooltip" id="tooltip">
+            <div class="tooltip-title" id="tooltip-title"></div>
+            <div class="tooltip-domain" id="tooltip-domain"></div>
+            <div class="tooltip-type" id="tooltip-type"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+        let allItems = [];
+
+        function loadExternalData(key) {
+            const saved = localStorage.getItem(key);
+            return saved ? JSON.parse(saved) : null;
+        }
+
+        function refreshData() {
+            allItems = [];
+
+            // Load from Strategy Deployment Matrix
+            const strategyData = loadExternalData('strategy_deployment_matrix');
+            if (strategyData) {
+                ['builders', 'professional', 'chess'].forEach(domain => {
+                    strategyData[domain].milestones.forEach(milestone => {
+                        if (milestone.text && !milestone.completed) {
+                            allItems.push({
+                                title: milestone.text,
+                                domain: domain,
+                                type: 'milestone',
+                                priority: milestone.priority || 'q2', // Default to Q2 if not set
+                                date: milestone.date
+                            });
+                        }
+                    });
+                });
+            }
+
+            // Load from RACI Matrix
+            const raciData = loadExternalData('raci_matrix');
+            if (raciData) {
+                ['builders', 'professional', 'chess'].forEach(domain => {
+                    raciData[domain].tasks.forEach(task => {
+                        if (task.name && !task.completed) {
+                            allItems.push({
+                                title: task.name,
+                                domain: domain,
+                                type: 'task',
+                                priority: task.priority || 'q2',
+                                description: task.description
+                            });
+                        }
+                    });
+                });
+            }
+
+            // Load from 90-Day Action Cascade
+            const cascadeData = loadExternalData('90day_action_cascade');
+            if (cascadeData) {
+                ['builders', 'professional', 'chess'].forEach(domain => {
+                    ['days30', 'days60', 'days90'].forEach(period => {
+                        cascadeData[domain][period].forEach(week => {
+                            week.tasks.forEach(task => {
+                                if (task.description && !task.completed) {
+                                    // Map high/medium/low to Eisenhower quadrants
+                                    let quadrant = 'q2';
+                                    if (task.priority === 'high') quadrant = 'q1';
+                                    else if (task.priority === 'low') quadrant = 'q4';
+                                    
+                                    allItems.push({
+                                        title: task.description,
+                                        domain: domain,
+                                        type: 'action',
+                                        priority: task.eisenhower || quadrant,
+                                        owner: task.owner
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+            }
+
+            renderMatrix();
+        }
+
+        function renderMatrix() {
+            // Clear all quadrants
+            ['q1', 'q2', 'q3', 'q4'].forEach(q => {
+                document.getElementById(`${q}-items`).innerHTML = '';
+            });
+
+            // Filter items
+            const filteredItems = currentFilter === 'all' 
+                ? allItems 
+                : allItems.filter(item => item.domain === currentFilter);
+
+            // Count items per quadrant
+            const counts = { q1: 0, q2: 0, q3: 0, q4: 0 };
+            
+            // Position and render items
+            filteredItems.forEach(item => {
+                counts[item.priority]++;
+                const container = document.getElementById(`${item.priority}-items`);
+                const containerRect = container.getBoundingClientRect();
+                
+                // Random position within quadrant (with padding)
+                const x = Math.random() * (containerRect.width - 100) + 20;
+                const y = Math.random() * (containerRect.height - 100) + 20;
+
+                const dot = document.createElement('div');
+                dot.className = `item-dot dot-${item.domain}`;
+                dot.style.left = x + 'px';
+                dot.style.top = y + 'px';
+                
+                dot.addEventListener('mouseenter', (e) => showTooltip(e, item));
+                dot.addEventListener('mouseleave', hideTooltip);
+                
+                container.appendChild(dot);
+            });
+
+            // Update counts
+            document.getElementById('total-items').textContent = filteredItems.length;
+            document.getElementById('q1-count').textContent = counts.q1;
+            document.getElementById('q2-count').textContent = counts.q2;
+            document.getElementById('q3-count').textContent = counts.q3;
+            document.getElementById('q4-count').textContent = counts.q4;
+        }
+
+        function showTooltip(e, item) {
+            const tooltip = document.getElementById('tooltip');
+            const domainNames = {
+                builders: 'Builder\'s Conference',
+                professional: 'Professional/Career',
+                chess: 'Chess Not Checkers'
+            };
+            const typeNames = {
+                milestone: 'Milestone',
+                task: 'RACI Task',
+                action: '90-Day Action'
+            };
+
+            document.getElementById('tooltip-title').textContent = item.title;
+            document.getElementById('tooltip-domain').textContent = domainNames[item.domain];
+            
+            const typeEl = document.getElementById('tooltip-type');
+            typeEl.textContent = typeNames[item.type];
+            typeEl.className = `tooltip-type type-${item.type}`;
+
+            tooltip.style.left = (e.pageX + 15) + 'px';
+            tooltip.style.top = (e.pageY + 15) + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('visible');
+        }
+
+        function filterDomain(domain) {
+            currentFilter = domain;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`filter-${domain}`).classList.add('active');
+            
+            renderMatrix();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.querySelector('.header-controls .btn');
+            btn.textContent = document.body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.querySelector('.header-controls .btn').textContent = '🌙 Dark Mode';
+            }
+
+            refreshData();
+
+            // Auto-refresh every 10 seconds if page is visible
+            setInterval(() => {
+                if (document.visibilityState === 'visible') {
+                    refreshData();
+                }
+            }, 10000);
+        });
+    </script>
+</body>
+</html>

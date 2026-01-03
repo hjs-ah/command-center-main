@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategy Deployment Matrix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --border-color: #333333;
+        }
+
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .domain-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .domain-content {
+            display: none;
+        }
+
+        .domain-content.active {
+            display: block;
+        }
+
+        .matrix-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent-primary);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .csf-list, .milestone-list, .resource-list, .risk-list {
+            margin-top: 15px;
+        }
+
+        .list-item {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 15px;
+            align-items: start;
+        }
+
+        .list-item-content {
+            flex: 1;
+        }
+
+        .list-item input[type="text"],
+        .list-item textarea {
+            margin-bottom: 10px;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete {
+            background: var(--accent-danger);
+            color: white;
+        }
+
+        .btn-add {
+            background: var(--accent-success);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            opacity: 0.9;
+        }
+
+        .milestone-date {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .milestone-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .milestone-status input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .progress-overview {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .domain-tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                border-bottom: none;
+                border-left: 3px solid transparent;
+            }
+
+            .tab.active {
+                border-left-color: var(--accent-primary);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Strategy Deployment Matrix</h1>
+                <p style="color: var(--text-secondary); margin-top: 5px;">One-page strategic visibility for ruthless prioritization</p>
+                <p style="font-style: italic; color: var(--text-secondary); font-size: 0.85rem; margin-top: 3px;">Ruthless prioritization framework - McKinsey Strategy Deployment Model</p>
+            </div>
+            <div class="header-controls">
+                <button class="btn" onclick="toggleTheme()">☀️ Light Mode</button>
+                <button class="btn" onclick="saveAll()">💾 Save All</button>
+                <button class="btn" onclick="exportData()">📊 Export</button>
+                <a href="executive-command-center.html" class="btn">← Dashboard</a>
+            </div>
+        </header>
+
+        <!-- Domain Tabs -->
+        <div class="domain-tabs">
+            <button class="tab active" onclick="switchTab('builders')">Builder's Conference</button>
+            <button class="tab" onclick="switchTab('professional')">Professional/Career</button>
+            <button class="tab" onclick="switchTab('chess')">Chess Not Checkers</button>
+        </div>
+
+        <!-- Builder's Conference -->
+        <div id="builders" class="domain-content active">
+            <div class="progress-overview">
+                <h2 class="section-header">Builder's Conference - Strategic Overview</h2>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="bc-csf-complete">0/5</div>
+                        <div class="stat-label">Critical Success Factors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="bc-milestone-complete">0/12</div>
+                        <div class="stat-label">90-Day Milestones</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="bc-risk-mitigated">0/3</div>
+                        <div class="stat-label">Risks Mitigated</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Strategic Objective</h3>
+                <div class="input-group">
+                    <label class="input-label">What are you ultimately achieving?</label>
+                    <textarea id="bc-objective" placeholder="Example: Launch sustainable economic empowerment ecosystem in Philadelphia by Q1 2026"></textarea>
+                </div>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Critical Success Factors (3-5)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">What MUST happen for this to succeed?</p>
+                <div id="bc-csf-list" class="csf-list"></div>
+                <button class="btn-add" onclick="addCSF('builders')">+ Add Success Factor</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">90-Day Milestones</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">Non-negotiable checkpoints with dates</p>
+                <div id="bc-milestone-list" class="milestone-list"></div>
+                <button class="btn-add" onclick="addMilestone('builders')">+ Add Milestone</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Resource Commitments</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">What's actually allocated (not hoped for)</p>
+                <div id="bc-resource-list" class="resource-list"></div>
+                <button class="btn-add" onclick="addResource('builders')">+ Add Resource</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Risk Mitigation</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">Top 3 threats to success and contingency responses</p>
+                <div id="bc-risk-list" class="risk-list"></div>
+                <button class="btn-add" onclick="addRisk('builders')">+ Add Risk</button>
+            </div>
+        </div>
+
+        <!-- Professional/Career -->
+        <div id="professional" class="domain-content">
+            <div class="progress-overview">
+                <h2 class="section-header">Professional/Career - Strategic Overview</h2>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="prof-csf-complete">0/5</div>
+                        <div class="stat-label">Critical Success Factors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="prof-milestone-complete">0/12</div>
+                        <div class="stat-label">90-Day Milestones</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="prof-risk-mitigated">0/3</div>
+                        <div class="stat-label">Risks Mitigated</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Strategic Objective</h3>
+                <div class="input-group">
+                    <label class="input-label">What are you ultimately achieving?</label>
+                    <textarea id="prof-objective" placeholder="Example: Establish Q1 2025 as foundation year for sustained revenue growth through strategic partnership and team performance"></textarea>
+                </div>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Critical Success Factors (3-5)</h3>
+                <div id="prof-csf-list" class="csf-list"></div>
+                <button class="btn-add" onclick="addCSF('professional')">+ Add Success Factor</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">90-Day Milestones</h3>
+                <div id="prof-milestone-list" class="milestone-list"></div>
+                <button class="btn-add" onclick="addMilestone('professional')">+ Add Milestone</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Resource Commitments</h3>
+                <div id="prof-resource-list" class="resource-list"></div>
+                <button class="btn-add" onclick="addResource('professional')">+ Add Resource</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Risk Mitigation</h3>
+                <div id="prof-risk-list" class="risk-list"></div>
+                <button class="btn-add" onclick="addRisk('professional')">+ Add Risk</button>
+            </div>
+        </div>
+
+        <!-- Chess Not Checkers -->
+        <div id="chess" class="domain-content">
+            <div class="progress-overview">
+                <h2 class="section-header">Chess Not Checkers - Strategic Overview</h2>
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="cnc-csf-complete">0/5</div>
+                        <div class="stat-label">Critical Success Factors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="cnc-milestone-complete">0/12</div>
+                        <div class="stat-label">90-Day Milestones</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="cnc-risk-mitigated">0/3</div>
+                        <div class="stat-label">Risks Mitigated</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Strategic Objective</h3>
+                <div class="input-group">
+                    <label class="input-label">What are you ultimately achieving?</label>
+                    <textarea id="cnc-objective" placeholder="Example: Develop executive mindset framework and strategic professional exposure for young Black men leading to 2026 program expansion"></textarea>
+                </div>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Critical Success Factors (3-5)</h3>
+                <div id="cnc-csf-list" class="csf-list"></div>
+                <button class="btn-add" onclick="addCSF('chess')">+ Add Success Factor</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">90-Day Milestones</h3>
+                <div id="cnc-milestone-list" class="milestone-list"></div>
+                <button class="btn-add" onclick="addMilestone('chess')">+ Add Milestone</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Resource Commitments</h3>
+                <div id="cnc-resource-list" class="resource-list"></div>
+                <button class="btn-add" onclick="addResource('chess')">+ Add Resource</button>
+            </div>
+
+            <div class="matrix-section">
+                <h3 class="section-header">Risk Mitigation</h3>
+                <div id="cnc-risk-list" class="risk-list"></div>
+                <button class="btn-add" onclick="addRisk('chess')">+ Add Risk</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'strategy_deployment_matrix';
+        let currentDomain = 'builders';
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {
+                builders: { objective: '', csf: [], milestones: [], resources: [], risks: [] },
+                professional: { objective: '', csf: [], milestones: [], resources: [], risks: [] },
+                chess: { objective: '', csf: [], milestones: [], resources: [], risks: [] }
+            };
+        }
+
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function switchTab(domain) {
+            currentDomain = domain;
+            document.querySelectorAll('.domain-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(domain).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function addCSF(domain) {
+            const data = loadData();
+            data[domain].csf.push({ text: '', completed: false });
+            saveData(data);
+            renderDomain(domain);
+        }
+
+        function addMilestone(domain) {
+            const data = loadData();
+            data[domain].milestones.push({ text: '', date: '', completed: false });
+            saveData(data);
+            renderDomain(domain);
+        }
+
+        function addResource(domain) {
+            const data = loadData();
+            data[domain].resources.push({ type: '', amount: '', notes: '' });
+            saveData(data);
+            renderDomain(domain);
+        }
+
+        function addRisk(domain) {
+            const data = loadData();
+            data[domain].risks.push({ threat: '', mitigation: '', status: '' });
+            saveData(data);
+            renderDomain(domain);
+        }
+
+        function deleteItem(domain, type, index) {
+            const data = loadData();
+            data[domain][type].splice(index, 1);
+            saveData(data);
+            renderDomain(domain);
+        }
+
+        function updateItem(domain, type, index, field, value) {
+            const data = loadData();
+            data[domain][type][index][field] = value;
+            saveData(data);
+            updateStats(domain);
+        }
+
+        function renderDomain(domain) {
+            const data = loadData();
+            const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
+
+            // Render objective
+            document.getElementById(`${prefix}-objective`).value = data[domain].objective || '';
+
+            // Render CSF
+            const csfList = document.getElementById(`${prefix}-csf-list`);
+            csfList.innerHTML = '';
+            data[domain].csf.forEach((item, index) => {
+                csfList.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <input type="text" value="${item.text}" 
+                                   onchange="updateItem('${domain}', 'csf', ${index}, 'text', this.value)"
+                                   placeholder="Critical success factor ${index + 1}">
+                            <div class="milestone-status">
+                                <input type="checkbox" ${item.completed ? 'checked' : ''}
+                                       onchange="updateItem('${domain}', 'csf', ${index}, 'completed', this.checked)">
+                                <label>Achieved</label>
+                            </div>
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn-small btn-delete" onclick="deleteItem('${domain}', 'csf', ${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render milestones
+            const milestoneList = document.getElementById(`${prefix}-milestone-list`);
+            milestoneList.innerHTML = '';
+            data[domain].milestones.forEach((item, index) => {
+                milestoneList.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <input type="text" value="${item.text}" 
+                                   onchange="updateItem('${domain}', 'milestones', ${index}, 'text', this.value)"
+                                   placeholder="Milestone description">
+                            <div class="milestone-date">
+                                <input type="date" value="${item.date}"
+                                       onchange="updateItem('${domain}', 'milestones', ${index}, 'date', this.value)">
+                                <select onchange="updateItem('${domain}', 'milestones', ${index}, 'priority', this.value)"
+                                        style="padding: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); margin-left: 10px;">
+                                    <option value="q1" ${(item.priority || 'q2') === 'q1' ? 'selected' : ''}>Q1: Urgent & Important</option>
+                                    <option value="q2" ${(item.priority || 'q2') === 'q2' ? 'selected' : ''}>Q2: Important Not Urgent</option>
+                                    <option value="q3" ${(item.priority || 'q2') === 'q3' ? 'selected' : ''}>Q3: Urgent Not Important</option>
+                                    <option value="q4" ${(item.priority || 'q2') === 'q4' ? 'selected' : ''}>Q4: Neither Urgent Nor Important</option>
+                                </select>
+                                <div class="milestone-status" style="margin-left: 10px;">
+                                    <input type="checkbox" ${item.completed ? 'checked' : ''}
+                                           onchange="updateItem('${domain}', 'milestones', ${index}, 'completed', this.checked)">
+                                    <label>Completed</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn-small btn-delete" onclick="deleteItem('${domain}', 'milestones', ${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render resources
+            const resourceList = document.getElementById(`${prefix}-resource-list`);
+            resourceList.innerHTML = '';
+            data[domain].resources.forEach((item, index) => {
+                resourceList.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <input type="text" value="${item.type}" 
+                                   onchange="updateItem('${domain}', 'resources', ${index}, 'type', this.value)"
+                                   placeholder="Resource type (time, money, people, partnerships)">
+                            <input type="text" value="${item.amount}"
+                                   onchange="updateItem('${domain}', 'resources', ${index}, 'amount', this.value)"
+                                   placeholder="Amount allocated">
+                            <textarea onchange="updateItem('${domain}', 'resources', ${index}, 'notes', this.value)"
+                                      placeholder="Notes">${item.notes}</textarea>
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn-small btn-delete" onclick="deleteItem('${domain}', 'resources', ${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render risks
+            const riskList = document.getElementById(`${prefix}-risk-list`);
+            riskList.innerHTML = '';
+            data[domain].risks.forEach((item, index) => {
+                riskList.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <input type="text" value="${item.threat}" 
+                                   onchange="updateItem('${domain}', 'risks', ${index}, 'threat', this.value)"
+                                   placeholder="What could derail this?">
+                            <textarea onchange="updateItem('${domain}', 'risks', ${index}, 'mitigation', this.value)"
+                                      placeholder="Contingency response">${item.mitigation}</textarea>
+                            <select onchange="updateItem('${domain}', 'risks', ${index}, 'status', this.value)">
+                                <option value="" ${item.status === '' ? 'selected' : ''}>Status</option>
+                                <option value="monitoring" ${item.status === 'monitoring' ? 'selected' : ''}>Monitoring</option>
+                                <option value="mitigated" ${item.status === 'mitigated' ? 'selected' : ''}>Mitigated</option>
+                            </select>
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn-small btn-delete" onclick="deleteItem('${domain}', 'risks', ${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            updateStats(domain);
+        }
+
+        function updateStats(domain) {
+            const data = loadData();
+            const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
+            
+            const csfComplete = data[domain].csf.filter(x => x.completed).length;
+            const milestoneComplete = data[domain].milestones.filter(x => x.completed).length;
+            const riskMitigated = data[domain].risks.filter(x => x.status === 'mitigated').length;
+
+            document.getElementById(`${prefix}-csf-complete`).textContent = 
+                `${csfComplete}/${data[domain].csf.length}`;
+            document.getElementById(`${prefix}-milestone-complete`).textContent = 
+                `${milestoneComplete}/${data[domain].milestones.length}`;
+            document.getElementById(`${prefix}-risk-mitigated`).textContent = 
+                `${riskMitigated}/${data[domain].risks.length}`;
+        }
+
+        function saveAll() {
+            const data = loadData();
+            ['builders', 'professional', 'chess'].forEach(domain => {
+                const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
+                const objective = document.getElementById(`${prefix}-objective`).value;
+                data[domain].objective = objective;
+            });
+            saveData(data);
+            alert('✅ All data saved successfully!');
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.querySelector('.header-controls .btn');
+            btn.textContent = document.body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        }
+
+        function exportData() {
+            const data = loadData();
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `strategy-deployment-matrix-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+            renderDomain('builders');
+            renderDomain('professional');
+            renderDomain('chess');
+
+            // Check for hash navigation
+            const hash = window.location.hash.substring(1);
+            if (hash && ['builders', 'professional', 'chess'].includes(hash)) {
+                switchTab(hash);
+            }
+        });
+    </script>
+</body>
+</html>
