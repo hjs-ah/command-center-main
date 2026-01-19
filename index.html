@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antone Holmes | Executive Command Center</title>
+    <style>
+        :root {
+            /* Light mode */
+            --bg-page: #ffffff;
+            --bg-card: #f8f9fa;
+            --text-primary: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-muted: #7a7a7a;
+            --accent-color: #ffe000;
+            --border-color: #e5e5e5;
+            --shadow: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --accent-color: #ffe000;
+            --border-color: #2a2a2a;
+            --shadow: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 24px 60px;
+        }
+
+        /* Header */
+        header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .custom-title-input {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: transparent;
+            border: none;
+            padding: 0;
+            letter-spacing: -0.02em;
+            width: 100%;
+            outline: none;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .custom-title-input:focus {
+            border-bottom-color: var(--accent-color);
+        }
+
+        .header-left p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .theme-toggle, .export-btn, .print-btn, .archive-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .theme-toggle:hover, .export-btn:hover, .print-btn:hover {
+            background: var(--accent-color);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+        }
+
+        /* Stats Grid - Single Row */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            cursor: text;
+            transition: color 0.3s ease;
+        }
+
+        .stat-value.warning {
+            color: #ef4444;
+        }
+
+        .stat-value:focus {
+            outline: 2px solid var(--accent-color);
+            border-radius: 4px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: var(--accent-color);
+            opacity: 0.3;
+            margin: 40px 0;
+        }
+
+        /* Eisenhower Matrix - Full Width */
+        .eisenhower-section {
+            margin-bottom: 48px;
+        }
+
+        .eisenhower-link {
+            display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .eisenhower-link:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        /* Tools Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 48px;
+        }
+
+        .tool-link {
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: block;
+            text-align: center;
+        }
+
+        .tool-link:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+        }
+
+        /* Section Layout (Two Column) */
+        .section {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 32px;
+            margin-bottom: 48px;
+            align-items: start;
+            opacity: 0;
+            transform: translateX(-30px);
+            animation: fadeInLeft 0.7s ease-out forwards;
+        }
+
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+        .section:nth-child(5) { animation-delay: 0.5s; }
+        .section:nth-child(6) { animation-delay: 0.6s; }
+
+        .section-label {
+            text-align: right;
+            padding-top: 4px;
+            position: sticky;
+            top: 24px;
+        }
+
+        .section-label h2 {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-primary);
+            opacity: 0.5;
+            margin-bottom: 8px;
+        }
+
+        .section-label p {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .section-content {
+            min-width: 0;
+        }
+
+        /* Project Cards */
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+
+        /* Archive and Delete Domain Buttons */
+        .archive-domain-btn, .delete-domain-btn {
+            position: absolute;
+            bottom: 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .archive-domain-btn {
+            right: 100px;
+        }
+
+        .delete-domain-btn {
+            right: 16px;
+        }
+
+        .archive-domain-btn:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #1a1a1a;
+        }
+
+        .delete-domain-btn:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .project-title {
+            flex: 1;
+        }
+
+        .project-title h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .project-title .status {
+            display: inline-block;
+            font-size: 10px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: var(--accent-color);
+            color: #1a1a1a;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .project-title .status:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .project-title .status.in-progress {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .project-title .status.not-started {
+            background: var(--text-muted);
+            color: white;
+        }
+
+        .project-title .status.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .project-title .status.on-hold {
+            background: #f59e0b;
+            color: #1a1a1a;
+        }
+
+        .project-title p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .meta-item {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .meta-value {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-left: 4px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background 0.2s ease;
+        }
+
+        .meta-value:hover {
+            background: var(--border-color);
+        }
+
+        .meta-value:focus {
+            outline: 2px solid var(--accent-color);
+            background: var(--bg-card);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 16px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .progress-value-edit {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 12px;
+            width: 40px;
+            text-align: right;
+            cursor: pointer;
+        }
+
+        .progress-value-edit:focus {
+            outline: 2px solid var(--accent-color);
+            border-radius: 3px;
+            padding: 2px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .quick-link {
+            font-size: 11px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .quick-link:hover {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+        }
+
+        /* Checklist */
+        .checklist {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .checklist h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checklist-section {
+            margin-bottom: 20px;
+        }
+
+        .checklist-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .checklist-section h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .checklist-item:hover {
+            background: var(--bg-page);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-top: 2px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Reorder Controls */
+        .reorder-controls {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .add-domain-section {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .add-domain-btn {
+            background: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-domain-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .reorder-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reorder-btn:hover {
+            background: var(--accent-color);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+        }
+
+        .reorder-btn.active {
+            background: var(--accent-color);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+        }
+
+        .section.reorder-mode {
+            cursor: move;
+            border: 2px dashed var(--accent-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .section.dragging {
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            header {
+                grid-template-columns: 1fr;
+            }
+
+            .header-controls {
+                justify-content: flex-start;
+            }
+
+            .section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .section-label {
+                text-align: left;
+                position: static;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            .theme-toggle, .export-btn, .print-btn, .reorder-controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <input type="text" 
+                       class="custom-title-input" 
+                       id="customTitle"
+                       placeholder="Executive Command Center"
+                       value="Executive Command Center">
+                <p>Strategic Dashboard • Multi-Domain Leadership</p>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+                <button class="archive-btn" onclick="window.location.href='domain-archive.html'">📦 Archives</button>
+                <button class="export-btn" onclick="exportData()">📊 Export</button>
+                <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+            </div>
+        </header>
+
+        <!-- Stats Dashboard - Single Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" contenteditable="true" data-stat="builders-milestones">0</div>
+                <div class="stat-label">Builder's Conference Active Milestones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" contenteditable="true" data-stat="professional-goals">0</div>
+                <div class="stat-label">Professional Active Milestones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" contenteditable="true" data-stat="chess-milestones">0</div>
+                <div class="stat-label">Chess Not Checkers Active Milestones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89</div>
+                <div class="stat-label">Days to Q1 End</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="reviews-completed">0</div>
+                <div class="stat-label">Weekly Reviews Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="reviews-missed">0</div>
+                <div class="stat-label">Missed Weekly Reviews</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Eisenhower Matrix - Full Width -->
+        <div class="eisenhower-section">
+            <a href="eisenhower-matrix.html" class="eisenhower-link">
+                📊 Eisenhower Priority Matrix - Visual Priority Dashboard
+            </a>
+        </div>
+
+        <!-- Strategic Tools -->
+        <div class="tools-grid">
+            <a href="strategy-deployment-matrix.html" class="tool-link">Strategy Matrix</a>
+            <a href="raci-matrix.html" class="tool-link">RACI Matrix</a>
+            <a href="logic-model.html" class="tool-link">Logic Model</a>
+            <a href="stakeholder-map.html" class="tool-link">Stakeholder Map</a>
+            <a href="90day-action-cascade.html" class="tool-link">90-Day Cascade</a>
+            <a href="time-architecture.html" class="tool-link">Time Architecture</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Sortable Sections Container -->
+        <div id="sortable-sections">
+            <!-- Builder's Conference Project -->
+            <div class="section" data-section="builders">
+                <div class="section-label">
+                    <h2>Builder's Conference</h2>
+                    <p>Doctoral/Ministry Domain</p>
+                </div>
+                <div class="section-content">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <button class="status" data-status="builders-status" onclick="cycleStatus(this)">Active</button>
+                                <h3>Builder's Conference</h3>
+                                <p>Economic empowerment ecosystem launch - Q1 2026 target</p>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Overall Progress</span>
+                                <span>
+                                    <input type="number" 
+                                           class="progress-value-edit" 
+                                           data-progress="builders-progress"
+                                           value="0" 
+                                           min="0" 
+                                           max="100">%
+                                </span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="builders-progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="project-meta">
+                            <div class="meta-item">
+                                <span>Milestones</span>
+                                <span class="meta-value" contenteditable="true" data-meta="builders-milestones-meta">0/12</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Partnerships</span>
+                                <span class="meta-value" contenteditable="true" data-meta="builders-partnerships">0</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Team Members</span>
+                                <span class="meta-value" contenteditable="true" data-meta="builders-team">0</span>
+                            </div>
+                        </div>
+
+                        <div class="quick-links">
+                            <a href="strategy-deployment-matrix.html#builders" class="quick-link">Strategy Matrix</a>
+                            <a href="raci-matrix.html#builders" class="quick-link">RACI Matrix</a>
+                            <a href="logic-model.html#builders" class="quick-link">Logic Model</a>
+                        </div>
+
+                        <button class="archive-domain-btn" onclick="archiveDomain('builders', 'Builder\\'s Conference')">📦 Archive</button>
+                        <button class="delete-domain-btn" onclick="deleteDomain('builders')">🗑️ Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional/Career Project -->
+            <div class="section" data-section="professional">
+                <div class="section-label">
+                    <h2>Professional</h2>
+                    <p>Career Domain</p>
+                </div>
+                <div class="section-content">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <button class="status" data-status="professional-status" onclick="cycleStatus(this)">Active</button>
+                                <h3>Professional/Career</h3>
+                                <p>Q1 partnership excellence + high-performance culture + 2025 strategy</p>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Overall Progress</span>
+                                <span>
+                                    <input type="number" 
+                                           class="progress-value-edit" 
+                                           data-progress="professional-progress"
+                                           value="0" 
+                                           min="0" 
+                                           max="100">%
+                                </span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="professional-progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="project-meta">
+                            <div class="meta-item">
+                                <span>Q1 Goals</span>
+                                <span class="meta-value" contenteditable="true" data-meta="professional-goals-meta">0/8</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Team Alignment</span>
+                                <span class="meta-value" contenteditable="true" data-meta="professional-alignment">0%</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Strategy Docs</span>
+                                <span class="meta-value" contenteditable="true" data-meta="professional-docs">0</span>
+                            </div>
+                        </div>
+
+                        <div class="quick-links">
+                            <a href="strategy-deployment-matrix.html#professional" class="quick-link">Strategy Matrix</a>
+                            <a href="raci-matrix.html#professional" class="quick-link">RACI Matrix</a>
+                            <a href="stakeholder-map.html#professional" class="quick-link">Stakeholder Map</a>
+                        </div>
+
+                        <button class="archive-domain-btn" onclick="archiveDomain('professional', 'Professional/Career')">📦 Archive</button>
+                        <button class="delete-domain-btn" onclick="deleteDomain('professional')">🗑️ Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chess Not Checkers Project -->
+            <div class="section" data-section="chess">
+                <div class="section-label">
+                    <h2>Chess Not Checkers</h2>
+                    <p>Ministry/Youth Development</p>
+                </div>
+                <div class="section-content">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <button class="status not-started" data-status="chess-status" onclick="cycleStatus(this)">Not Started</button>
+                                <h3>Chess Not Checkers</h3>
+                                <p>Executive mindset framework + strategic exposure + 2026 expansion</p>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Overall Progress</span>
+                                <span>
+                                    <input type="number" 
+                                           class="progress-value-edit" 
+                                           data-progress="chess-progress"
+                                           value="0" 
+                                           min="0" 
+                                           max="100">%
+                                </span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="chess-progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="project-meta">
+                            <div class="meta-item">
+                                <span>Participants</span>
+                                <span class="meta-value" contenteditable="true" data-meta="chess-participants">0</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Mentors</span>
+                                <span class="meta-value" contenteditable="true" data-meta="chess-mentors">0</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Framework %</span>
+                                <span class="meta-value" contenteditable="true" data-meta="chess-framework">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="quick-links">
+                            <a href="strategy-deployment-matrix.html#chess" class="quick-link">Strategy Matrix</a>
+                            <a href="raci-matrix.html#chess" class="quick-link">RACI Matrix</a>
+                            <a href="logic-model.html#chess" class="quick-link">Logic Model</a>
+                        </div>
+
+                        <button class="archive-domain-btn" onclick="archiveDomain('chess', 'Chess Not Checkers')">📦 Archive</button>
+                        <button class="delete-domain-btn" onclick="deleteDomain('chess')">🗑️ Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Domain Button -->
+            <div class="section" data-section="add-domain-btn" style="grid-template-columns: 1fr; align-items: center; justify-content: center; text-align: center;">
+                <button class="add-domain-btn" onclick="addNewDomain()">
+                    ➕ Add New Domain
+                </button>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+            <!-- Weekly Review Checklist -->
+            <div class="section" data-section="review">
+                <div class="section-label">
+                    <h2>Weekly Review</h2>
+                    <p>Strategic rhythm</p>
+                </div>
+                <div class="section-content">
+                    <div class="checklist">
+                        <h3>⚡ Weekly Review Checklist</h3>
+                        
+                        <div class="checklist-item">
+                            <input type="checkbox" id="prior-week" data-review-item>
+                            <label for="prior-week">Prior week's review completed</label>
+                        </div>
+
+                        <div class="checklist-section">
+                            <h4>Strategic Review</h4>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="review-progress" data-review-item>
+                                <label for="review-progress">Review progress on all 3 domains</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="update-milestones" data-review-item>
+                                <label for="update-milestones">Update milestone completion status</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="identify-blockers" data-review-item>
+                                <label for="identify-blockers">Identify blockers and dependencies</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="adjust-plan" data-review-item>
+                                <label for="adjust-plan">Adjust 90-day action plan if needed</label>
+                            </div>
+                        </div>
+
+                        <div class="checklist-section">
+                            <h4>Stakeholder Engagement</h4>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="key-conversations" data-review-item>
+                                <label for="key-conversations">Key conversations completed</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="partnership-progress" data-review-item>
+                                <label for="partnership-progress">Partnership progress tracked</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="team-checkins" data-review-item>
+                                <label for="team-checkins">Team accountability check-ins</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="prewire-decisions" data-review-item>
+                                <label for="prewire-decisions">Pre-wire next week's decisions</label>
+                            </div>
+                        </div>
+
+                        <div class="checklist-section">
+                            <h4>Time Architecture</h4>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="deep-work" data-review-item>
+                                <label for="deep-work">Deep work sessions protected</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="calendar-aligned" data-review-item>
+                                <label for="calendar-aligned">Calendar aligned with priorities</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="energy-management" data-review-item>
+                                <label for="energy-management">Energy management optimized</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="next-week-focus" data-review-item>
+                                <label for="next-week-focus">Next week's focus areas defined</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reorder Controls -->
+        <div class="reorder-controls">
+            <button class="reorder-btn" onclick="toggleReorderMode()">
+                🔄 Enable Section Reordering
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        let reorderMode = false;
+        let draggedElement = null;
+        let domainCounter = 3; // Start after builders, professional, chess
+
+        // Status cycle options
+        const statusOptions = [
+            { name: 'Active', class: '' },
+            { name: 'In Progress', class: 'in-progress' },
+            { name: 'Not Started', class: 'not-started' },
+            { name: 'Completed', class: 'completed' },
+            { name: 'On Hold', class: 'on-hold' }
+        ];
+
+        // Load saved data on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAllData();
+            setupEventListeners();
+            checkWeeklyReviewStatus();
+        });
+
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.querySelector('.theme-toggle');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                btn.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load all data from localStorage
+        function loadAllData() {
+            // Load theme
+            const savedTheme = localStorage.getItem('theme');
+            const themeBtn = document.querySelector('.theme-toggle');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeBtn.textContent = '☀️ Light Mode';
+            } else {
+                themeBtn.textContent = '🌙 Dark Mode';
+            }
+
+            // Load custom title
+            const savedTitle = localStorage.getItem('customTitle');
+            if (savedTitle) {
+                document.getElementById('customTitle').value = savedTitle;
+            }
+
+            // Load stats
+            document.querySelectorAll('[data-stat]').forEach(el => {
+                const key = el.getAttribute('data-stat');
+                const saved = localStorage.getItem(key);
+                if (saved !== null) {
+                    el.textContent = saved;
+                }
+            });
+
+            // Load progress bars
+            document.querySelectorAll('[data-progress]').forEach(input => {
+                const key = input.getAttribute('data-progress');
+                const saved = localStorage.getItem(key);
+                if (saved !== null) {
+                    input.value = saved;
+                    updateProgressBar(key, saved);
+                }
+            });
+
+            // Load meta values
+            document.querySelectorAll('[data-meta]').forEach(el => {
+                const key = el.getAttribute('data-meta');
+                const saved = localStorage.getItem(key);
+                if (saved !== null) {
+                    el.textContent = saved;
+                }
+            });
+
+            // Load checklist state
+            document.querySelectorAll('[data-review-item]').forEach(checkbox => {
+                const saved = localStorage.getItem(`checklist_${checkbox.id}`);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                }
+            });
+
+            // Update review counts
+            updateReviewCounts();
+
+            // Load section order
+            const savedOrder = localStorage.getItem('sectionOrder');
+            if (savedOrder) {
+                reorderSections(JSON.parse(savedOrder));
+            }
+
+            // Load status buttons
+            document.querySelectorAll('[data-status]').forEach(btn => {
+                const key = btn.getAttribute('data-status');
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                    const statusData = JSON.parse(saved);
+                    btn.textContent = statusData.name;
+                    btn.className = 'status ' + (statusData.class || '');
+                }
+            });
+
+            // Load custom domains
+            loadCustomDomains();
+        }
+
+        // Cycle through status options
+        function cycleStatus(button) {
+            const currentText = button.textContent.trim();
+            const currentIndex = statusOptions.findIndex(s => s.name === currentText);
+            const nextIndex = (currentIndex + 1) % statusOptions.length;
+            const nextStatus = statusOptions[nextIndex];
+            
+            button.textContent = nextStatus.name;
+            button.className = 'status ' + (nextStatus.class || '');
+            
+            // Save to localStorage
+            const key = button.getAttribute('data-status');
+            localStorage.setItem(key, JSON.stringify(nextStatus));
+        }
+
+        // Check weekly review status and mark if behind
+        function checkWeeklyReviewStatus() {
+            const currentWeek = getWeekNumber(new Date());
+            const completedReviews = parseInt(localStorage.getItem('totalReviewsCompleted') || '0');
+            const missedReviews = currentWeek - completedReviews - 1; // Subtract 1 for current week
+            
+            const missedEl = document.getElementById('reviews-missed');
+            const completedEl = document.getElementById('reviews-completed');
+            
+            if (missedReviews > 0) {
+                missedEl.textContent = missedReviews;
+                missedEl.classList.add('warning');
+                completedEl.classList.add('warning');
+            } else {
+                missedEl.textContent = '0';
+                missedEl.classList.remove('warning');
+                completedEl.classList.remove('warning');
+            }
+            
+            // Update completed count
+            completedEl.textContent = completedReviews;
+        }
+
+        // Add new domain
+        function addNewDomain() {
+            const domainName = prompt('Enter domain name (e.g., "Personal Development", "Health & Fitness"):');
+            if (!domainName || domainName.trim() === '') return;
+            
+            const domainLabel = prompt('Enter short label for sidebar (e.g., "Personal", "Health"):');
+            if (!domainLabel || domainLabel.trim() === '') return;
+            
+            const domainDesc = prompt('Enter brief description:') || '';
+            
+            domainCounter++;
+            const domainId = `custom-domain-${domainCounter}`;
+            
+            const newDomain = createDomainHTML(domainId, domainName, domainLabel, domainDesc);
+            
+            // Insert before the Add Domain button
+            const addDomainButton = document.querySelector('[data-section="add-domain-btn"]');
+            addDomainButton.parentNode.insertBefore(newDomain, addDomainButton);
+            
+            // Save to localStorage
+            saveCustomDomain(domainId, domainName, domainLabel, domainDesc);
+            
+            // Setup event listeners for new domain
+            setupDomainListeners(newDomain);
+        }
+
+        // Create domain HTML
+        function createDomainHTML(id, name, label, desc) {
+            const section = document.createElement('div');
+            section.className = 'section';
+            section.setAttribute('data-section', id);
+            
+            section.innerHTML = `
+                <div class="section-label">
+                    <h2>${label}</h2>
+                    <p>Custom Domain</p>
+                </div>
+                <div class="section-content">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <button class="status not-started" data-status="${id}-status" onclick="cycleStatus(this)">Not Started</button>
+                                <h3>${name}</h3>
+                                <p>${desc}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Overall Progress</span>
+                                <span>
+                                    <input type="number" 
+                                           class="progress-value-edit" 
+                                           data-progress="${id}-progress"
+                                           value="0" 
+                                           min="0" 
+                                           max="100">%
+                                </span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="${id}-progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="project-meta">
+                            <div class="meta-item">
+                                <span>Tasks</span>
+                                <span class="meta-value" contenteditable="true" data-meta="${id}-tasks">0/0</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Resources</span>
+                                <span class="meta-value" contenteditable="true" data-meta="${id}-resources">0</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>Team</span>
+                                <span class="meta-value" contenteditable="true" data-meta="${id}-team">0</span>
+                            </div>
+                        </div>
+
+                        <div class="quick-links">
+                            <a href="strategy-deployment-matrix.html#${id}" class="quick-link">Strategy Matrix</a>
+                            <a href="raci-matrix.html#${id}" class="quick-link">RACI Matrix</a>
+                            <a href="logic-model.html#${id}" class="quick-link">Logic Model</a>
+                        </div>
+
+                        <button class="archive-domain-btn" onclick="archiveDomain('${id}', '${sanitizedName}')">📦 Archive</button>
+                        <button class="delete-domain-btn" onclick="deleteDomain('${id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            return section;
+        }
+
+        // Setup listeners for domain elements
+        function setupDomainListeners(section) {
+            // Progress bars
+            section.querySelectorAll('[data-progress]').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const key = e.target.getAttribute('data-progress');
+                    const value = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                    e.target.value = value;
+                    localStorage.setItem(key, value);
+                    updateProgressBar(key, value);
+                });
+            });
+
+            // Meta values
+            section.querySelectorAll('[data-meta]').forEach(el => {
+                el.addEventListener('blur', (e) => {
+                    const key = e.target.getAttribute('data-meta');
+                    localStorage.setItem(key, e.target.textContent);
+                });
+            });
+        }
+
+        // Save custom domain
+        function saveCustomDomain(id, name, label, desc) {
+            const domains = JSON.parse(localStorage.getItem('customDomains') || '[]');
+            domains.push({ id, name, label, desc });
+            localStorage.setItem('customDomains', JSON.stringify(domains));
+        }
+
+        // Delete custom domain
+        // Archive Domain
+        function archiveDomain(domainId, domainName) {
+            // Create modal for archive prompt
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: var(--bg-card);
+                padding: 32px;
+                border-radius: 8px;
+                max-width: 500px;
+                width: 90%;
+                border: 1px solid var(--border-color);
+            `;
+
+            modalContent.innerHTML = `
+                <h2 style="margin-bottom: 24px; color: var(--text-primary); font-size: 20px;">Archive ${domainName}</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-secondary); font-weight: 600; font-size: 13px;">
+                        Why are you archiving this domain?
+                    </label>
+                    <textarea id="archiveReason" 
+                              style="width: 100%; 
+                                     padding: 12px; 
+                                     border: 1px solid var(--border-color); 
+                                     border-radius: 4px; 
+                                     font-family: inherit; 
+                                     font-size: 14px;
+                                     background: var(--bg-page);
+                                     color: var(--text-primary);
+                                     resize: vertical;
+                                     min-height: 80px;"
+                              placeholder="e.g., Project completed, priorities shifted, etc."></textarea>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-secondary); font-weight: 600; font-size: 13px;">
+                        Results Summary
+                    </label>
+                    <textarea id="archiveSummary" 
+                              style="width: 100%; 
+                                     padding: 12px; 
+                                     border: 1px solid var(--border-color); 
+                                     border-radius: 4px; 
+                                     font-family: inherit; 
+                                     font-size: 14px;
+                                     background: var(--bg-page);
+                                     color: var(--text-primary);
+                                     resize: vertical;
+                                     min-height: 100px;"
+                              placeholder="What was accomplished? Key learnings? Outcomes?"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button id="cancelArchive" 
+                            style="padding: 10px 20px; 
+                                   background: transparent; 
+                                   border: 1px solid var(--border-color); 
+                                   border-radius: 4px; 
+                                   cursor: pointer;
+                                   color: var(--text-secondary);
+                                   font-weight: 600;
+                                   font-size: 13px;">
+                        Cancel
+                    </button>
+                    <button id="confirmArchive" 
+                            style="padding: 10px 20px; 
+                                   background: var(--accent-color); 
+                                   border: none; 
+                                   border-radius: 4px; 
+                                   cursor: pointer;
+                                   color: #1a1a1a;
+                                   font-weight: 700;
+                                   font-size: 13px;">
+                        📦 Archive Domain
+                    </button>
+                </div>
+            `;
+
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            // Handle cancel
+            document.getElementById('cancelArchive').addEventListener('click', () => {
+                modal.remove();
+            });
+
+            // Handle archive confirmation
+            document.getElementById('confirmArchive').addEventListener('click', () => {
+                const reason = document.getElementById('archiveReason').value.trim();
+                const summary = document.getElementById('archiveSummary').value.trim();
+
+                if (!reason || !summary) {
+                    alert('Please provide both a reason and results summary before archiving.');
+                    return;
+                }
+
+                // Collect all domain data from localStorage
+                const domainData = {
+                    id: domainId,
+                    name: domainName,
+                    archivedDate: new Date().toISOString(),
+                    reason: reason,
+                    summary: summary,
+                    data: {}
+                };
+
+                // Gather all localStorage data for this domain
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith(domainId)) {
+                        domainData.data[key] = localStorage.getItem(key);
+                    }
+                }
+
+                // Get existing archives
+                const archives = JSON.parse(localStorage.getItem('archivedDomains') || '[]');
+                archives.push(domainData);
+                localStorage.setItem('archivedDomains', JSON.stringify(archives));
+
+                // Remove the domain using existing delete function logic
+                const domainSection = document.querySelector(`[data-section="${domainId}"]`);
+                if (domainSection) {
+                    domainSection.remove();
+                }
+
+                // Remove from customDomains array (if it's a custom domain)
+                const domains = JSON.parse(localStorage.getItem('customDomains') || '[]');
+                const updatedDomains = domains.filter(d => d.id !== domainId);
+                localStorage.setItem('customDomains', JSON.stringify(updatedDomains));
+
+                // Remove all associated localStorage data
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith(domainId)) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+
+                modal.remove();
+                alert(`${domainName} has been archived successfully!`);
+            });
+
+            // Close on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function deleteDomain(domainId) {
+            if (!confirm('Are you sure you want to delete this domain? This will remove all associated data.')) {
+                return;
+            }
+
+            // Remove domain section from DOM
+            const domainSection = document.querySelector(`[data-section="${domainId}"]`);
+            if (domainSection) {
+                domainSection.remove();
+            }
+
+            // Remove from customDomains array
+            const domains = JSON.parse(localStorage.getItem('customDomains') || '[]');
+            const updatedDomains = domains.filter(d => d.id !== domainId);
+            localStorage.setItem('customDomains', JSON.stringify(updatedDomains));
+
+            // Remove all associated localStorage data
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(domainId)) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+        }
+
+        // Load custom domains
+        function loadCustomDomains() {
+            const domains = JSON.parse(localStorage.getItem('customDomains') || '[]');
+            const addDomainButton = document.querySelector('[data-section="add-domain-btn"]');
+            
+            domains.forEach(domain => {
+                // Check if domain already exists
+                if (!document.querySelector(`[data-section="${domain.id}"]`)) {
+                    const newDomain = createDomainHTML(domain.id, domain.name, domain.label, domain.desc);
+                    addDomainButton.parentNode.insertBefore(newDomain, addDomainButton);
+                    setupDomainListeners(newDomain);
+                    
+                    // Load saved data for this domain
+                    const statusBtn = newDomain.querySelector('[data-status]');
+                    const savedStatus = localStorage.getItem(`${domain.id}-status`);
+                    if (savedStatus) {
+                        const statusData = JSON.parse(savedStatus);
+                        statusBtn.textContent = statusData.name;
+                        statusBtn.className = 'status ' + (statusData.class || '');
+                    }
+                    
+                    const progressInput = newDomain.querySelector('[data-progress]');
+                    const savedProgress = localStorage.getItem(`${domain.id}-progress`);
+                    if (savedProgress) {
+                        progressInput.value = savedProgress;
+                        updateProgressBar(`${domain.id}-progress`, savedProgress);
+                    }
+                    
+                    newDomain.querySelectorAll('[data-meta]').forEach(el => {
+                        const key = el.getAttribute('data-meta');
+                        const saved = localStorage.getItem(key);
+                        if (saved) el.textContent = saved;
+                    });
+                }
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Custom title
+            document.getElementById('customTitle').addEventListener('input', (e) => {
+                localStorage.setItem('customTitle', e.target.value);
+            });
+
+            // Stats - contenteditable
+            document.querySelectorAll('[data-stat]').forEach(el => {
+                el.addEventListener('blur', (e) => {
+                    const key = e.target.getAttribute('data-stat');
+                    localStorage.setItem(key, e.target.textContent);
+                });
+            });
+
+            // Progress bars
+            document.querySelectorAll('[data-progress]').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const key = e.target.getAttribute('data-progress');
+                    const value = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                    e.target.value = value;
+                    localStorage.setItem(key, value);
+                    updateProgressBar(key, value);
+                });
+            });
+
+            // Meta values
+            document.querySelectorAll('[data-meta]').forEach(el => {
+                el.addEventListener('blur', (e) => {
+                    const key = e.target.getAttribute('data-meta');
+                    localStorage.setItem(key, e.target.textContent);
+                });
+            });
+
+            // Checklist items
+            document.querySelectorAll('[data-review-item]').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    localStorage.setItem(`checklist_${e.target.id}`, e.target.checked);
+                    updateReviewCounts();
+                });
+            });
+        }
+
+        // Update progress bar visual
+        function updateProgressBar(key, value) {
+            const bar = document.getElementById(`${key}-bar`);
+            if (bar) {
+                bar.style.width = `${value}%`;
+            }
+        }
+
+        // Update review counts
+        function updateReviewCounts() {
+            const checkboxes = document.querySelectorAll('[data-review-item]');
+            const total = checkboxes.length;
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            
+            // If all items are checked, increment weekly reviews and reset
+            if (completed === total && total > 0) {
+                // Get current week number
+                const currentWeek = getWeekNumber(new Date());
+                const lastCompletedWeek = localStorage.getItem('lastCompletedWeek');
+                
+                // Only increment if this is a new week completion
+                if (lastCompletedWeek !== currentWeek.toString()) {
+                    const reviewsCompleted = parseInt(localStorage.getItem('totalReviewsCompleted') || '0');
+                    const newTotal = reviewsCompleted + 1;
+                    localStorage.setItem('totalReviewsCompleted', newTotal);
+                    localStorage.setItem('lastCompletedWeek', currentWeek);
+                    
+                    // Update display and check status
+                    checkWeeklyReviewStatus();
+                    
+                    // Show completion message
+                    setTimeout(() => {
+                        if (confirm('🎉 Weekly review complete! This will be recorded. Reset checklist for next week?')) {
+                            // Reset all checkboxes
+                            checkboxes.forEach(cb => {
+                                cb.checked = false;
+                                localStorage.setItem(`checklist_${cb.id}`, 'false');
+                            });
+                            updateReviewCounts();
+                        }
+                    }, 500);
+                }
+            }
+        }
+
+        // Get ISO week number
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        }
+
+        // Export functionality
+        function exportData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                title: document.getElementById('customTitle').value,
+                stats: {},
+                progress: {},
+                meta: {},
+                statuses: {},
+                checklist: {},
+                sectionOrder: getSectionOrder(),
+                customDomains: JSON.parse(localStorage.getItem('customDomains') || '[]'),
+                weeklyReviews: {
+                    completed: localStorage.getItem('totalReviewsCompleted') || '0',
+                    lastCompletedWeek: localStorage.getItem('lastCompletedWeek') || '0'
+                }
+            };
+
+            // Collect stats
+            document.querySelectorAll('[data-stat]').forEach(el => {
+                const key = el.getAttribute('data-stat');
+                data.stats[key] = el.textContent;
+            });
+
+            // Collect progress
+            document.querySelectorAll('[data-progress]').forEach(input => {
+                const key = input.getAttribute('data-progress');
+                data.progress[key] = input.value;
+            });
+
+            // Collect meta
+            document.querySelectorAll('[data-meta]').forEach(el => {
+                const key = el.getAttribute('data-meta');
+                data.meta[key] = el.textContent;
+            });
+
+            // Collect statuses
+            document.querySelectorAll('[data-status]').forEach(btn => {
+                const key = btn.getAttribute('data-status');
+                data.statuses[key] = {
+                    name: btn.textContent.trim(),
+                    class: btn.className.replace('status', '').trim()
+                };
+            });
+
+            // Collect checklist
+            document.querySelectorAll('[data-review-item]').forEach(checkbox => {
+                data.checklist[checkbox.id] = checkbox.checked;
+            });
+
+            // Download as JSON
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `executive-command-center-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Reorder mode toggle
+        function toggleReorderMode() {
+            reorderMode = !reorderMode;
+            const btn = document.querySelector('.reorder-btn');
+            const sections = document.querySelectorAll('.section');
+            
+            if (reorderMode) {
+                btn.textContent = '✅ Done Reordering';
+                btn.classList.add('active');
+                sections.forEach(section => {
+                    section.classList.add('reorder-mode');
+                    section.setAttribute('draggable', 'true');
+                });
+                enableDragAndDrop();
+            } else {
+                btn.textContent = '🔄 Enable Section Reordering';
+                btn.classList.remove('active');
+                sections.forEach(section => {
+                    section.classList.remove('reorder-mode');
+                    section.removeAttribute('draggable');
+                });
+                disableDragAndDrop();
+                saveSectionOrder();
+            }
+        }
+
+        // Drag and drop functionality
+        function enableDragAndDrop() {
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                section.addEventListener('dragstart', handleDragStart);
+                section.addEventListener('dragover', handleDragOver);
+                section.addEventListener('drop', handleDrop);
+                section.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        function disableDragAndDrop() {
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                section.removeEventListener('dragstart', handleDragStart);
+                section.removeEventListener('dragover', handleDragOver);
+                section.removeEventListener('drop', handleDrop);
+                section.removeEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (draggedElement !== this) {
+                const container = document.getElementById('sortable-sections');
+                const allSections = Array.from(container.children);
+                const draggedIndex = allSections.indexOf(draggedElement);
+                const targetIndex = allSections.indexOf(this);
+                
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedElement, this);
+                }
+            }
+            
+            return false;
+        }
+
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+        }
+
+        // Save section order
+        function saveSectionOrder() {
+            const order = getSectionOrder();
+            localStorage.setItem('sectionOrder', JSON.stringify(order));
+        }
+
+        // Get current section order
+        function getSectionOrder() {
+            const sections = document.querySelectorAll('.section');
+            return Array.from(sections).map(s => s.getAttribute('data-section'));
+        }
+
+        // Reorder sections based on saved order
+        function reorderSections(order) {
+            const container = document.getElementById('sortable-sections');
+            const sections = Array.from(container.querySelectorAll('.section'));
+            
+            order.forEach(sectionId => {
+                const section = sections.find(s => s.getAttribute('data-section') === sectionId);
+                if (section) {
+                    container.appendChild(section);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -3,377 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RACI Matrix Builder</title>
+    <title>RACI Matrix | Executive Command Center</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #1a1a1a;
-            --bg-card: #252525;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --accent-primary: #3b82f6;
-            --accent-secondary: #8b5cf6;
-            --accent-success: #10b981;
-            --accent-warning: #f59e0b;
-            --accent-danger: #ef4444;
-            --accent-r: #8b5cf6;
-            --accent-a: #3b82f6;
-            --accent-c: #10b981;
-            --accent-i: #f59e0b;
-            --border-color: #333333;
+            --bg-page: #ffffff; --bg-card: #f8f9fa; --text-primary: #1a1a1a;
+            --text-secondary: #4a4a4a; --text-muted: #7a7a7a; --accent-color: #ffe000;
+            --border-color: #e5e5e5; --shadow: rgba(0, 0, 0, 0.05);
         }
-
-        body.light-mode {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-card: #ffffff;
-            --text-primary: #1a1a1a;
-            --text-secondary: #6b7280;
-            --border-color: #e5e7eb;
+        [data-theme="dark"] {
+            --bg-page: #0a0a0a; --bg-card: #1a1a1a; --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b0; --text-muted: #808080; --border-color: #2a2a2a;
+            --shadow: rgba(255, 255, 255, 0.05);
         }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            padding: 20px;
-            transition: all 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-page); color: var(--text-primary); line-height: 1.6;
+            padding: 40px 20px; transition: all 0.3s ease;
         }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
+        .container { max-width: 1600px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        h1 { font-size: 28px; font-weight: 700; }
+        .subtitle { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+        .controls { display: flex; gap: 12px; }
         .btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 500;
+            color: var(--text-secondary); cursor: pointer; transition: all 0.2s ease; text-decoration: none;
         }
-
-        .btn:hover {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-        }
-
-        .domain-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
+        .btn:hover { background: var(--bg-page); color: var(--text-primary);
+            border-color: var(--text-muted); transform: translateY(-1px); }
+        
+        /* Domain Tabs */
+        .domain-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
         .tab {
-            padding: 15px 30px;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
+            padding: 8px 16px; background: transparent; border: 1px solid var(--border-color);
+            border-radius: 6px 6px 0 0; cursor: pointer; font-size: 13px; font-weight: 600;
+            color: var(--text-secondary); transition: all 0.2s ease;
         }
-
-        .tab.active {
-            color: var(--accent-primary);
-            border-bottom-color: var(--accent-primary);
-        }
-
-        .domain-content {
-            display: none;
-        }
-
-        .domain-content.active {
-            display: block;
-        }
-
-        .raci-guide {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .raci-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .raci-item {
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid;
-        }
-
-        .raci-r {
-            background: rgba(139, 92, 246, 0.1);
-            border-color: var(--accent-r);
-        }
-
-        .raci-a {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: var(--accent-a);
-        }
-
-        .raci-c {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: var(--accent-c);
-        }
-
-        .raci-i {
-            background: rgba(245, 158, 11, 0.1);
-            border-color: var(--accent-i);
-        }
-
-        .raci-letter {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .team-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-
-        .section-header {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--accent-primary);
-        }
-
-        .team-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
+        .tab.active { background: var(--accent-color); color: #1a1a1a; border-color: var(--accent-color); }
+        .domain-content { display: none; }
+        .domain-content.active { display: block; }
+        
+        /* Team Section */
+        .team-section { background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 24px; margin-bottom: 20px; }
+        .section-header { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+        .team-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
         .team-member {
-            background: var(--bg-secondary);
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background: var(--bg-page); border: 1px solid var(--border-color);
+            padding: 8px 12px; border-radius: 20px; font-size: 12px; display: flex;
+            align-items: center; gap: 8px;
         }
-
-        .remove-member {
-            background: var(--accent-danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .add-member-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
+        .remove-member { cursor: pointer; color: var(--text-muted); font-weight: bold; }
+        .remove-member:hover { color: #ef4444; }
+        .add-member-form { display: flex; gap: 8px; }
         .add-member-form input {
-            flex: 1;
-            padding: 10px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
+            flex: 1; background: var(--bg-page); border: 1px solid var(--border-color);
+            padding: 8px 12px; border-radius: 6px; font-size: 13px; color: var(--text-primary);
         }
-
         .btn-add {
-            background: var(--accent-success);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+            background: var(--accent-color); border: 1px solid var(--accent-color);
+            color: #1a1a1a; padding: 8px 16px; border-radius: 6px; font-size: 13px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--shadow); }
+        
+        /* Matrix Table */
+        .matrix-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .matrix-table th, .matrix-table td {
+            padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color);
+            font-size: 12px;
+        }
+        .matrix-table th { font-weight: 600; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.05em; font-size: 10px; }
+        .matrix-table input[type="text"], .matrix-table input[type="date"] {
+            width: 100%; background: var(--bg-page); border: 1px solid var(--border-color);
+            padding: 6px 8px; border-radius: 4px; font-size: 12px; color: var(--text-primary);
+        }
+        .matrix-table select {
+            background: var(--bg-page); border: 1px solid var(--border-color);
+            padding: 6px 8px; border-radius: 4px; font-size: 11px; color: var(--text-primary);
+        }
+        .raci-cell { display: flex; align-items: center; gap: 4px; }
+        .raci-checkbox { width: 16px; height: 16px; cursor: pointer; }
+        .delete-task { background: transparent; border: 1px solid var(--border-color);
+            padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;
+            color: var(--text-secondary); font-weight: 600; }
+        .delete-task:hover { background: #ef4444; border-color: #ef4444; color: white; }
+        
+        /* Accountability Alert */
+        .accountability-alert {
+            background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444;
+            border-radius: 6px; padding: 16px; margin-top: 20px; font-size: 13px;
         }
 
-        .matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        /* Legend */
+        .raci-legend {
             background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            overflow: hidden;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .matrix-table th,
-        .matrix-table td {
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .legend-badge {
+            background: var(--accent-color);
+            color: #1a1a1a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 11px;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .legend-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-desc strong {
+            display: block;
+            color: var(--text-primary);
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        /* Statistics */
+        .stats-overview {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .stat-card {
+            text-align: center;
             padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .matrix-table th {
-            background: var(--bg-secondary);
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-        }
-
-        .matrix-table input[type="text"],
-        .matrix-table textarea {
-            width: 100%;
-            padding: 8px;
-            background: var(--bg-secondary);
+            background: var(--bg-page);
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: var(--text-primary);
         }
 
-        .matrix-table textarea {
-            min-height: 60px;
-            resize: vertical;
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 4px;
         }
 
-        .role-buttons {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .role-btn {
-            padding: 5px 10px;
-            border: 2px solid;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             font-weight: 600;
-            background: transparent;
-            transition: all 0.2s;
         }
 
-        .role-btn.selected {
-            color: white;
-        }
-
-        .role-r {
-            border-color: var(--accent-r);
-            color: var(--accent-r);
-        }
-
-        .role-r.selected {
-            background: var(--accent-r);
-        }
-
-        .role-a {
-            border-color: var(--accent-a);
-            color: var(--accent-a);
-        }
-
-        .role-a.selected {
-            background: var(--accent-a);
-        }
-
-        .role-c {
-            border-color: var(--accent-c);
-            color: var(--accent-c);
-        }
-
-        .role-c.selected {
-            background: var(--accent-c);
-        }
-
-        .role-i {
-            border-color: var(--accent-i);
-            color: var(--accent-i);
-        }
-
-        .role-i.selected {
-            background: var(--accent-i);
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-small {
-            padding: 5px 10px;
-            font-size: 0.85rem;
-            border-radius: 6px;
-            border: none;
+        .status-checkbox {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
+            margin-right: 8px;
         }
-
-        .btn-delete {
-            background: var(--accent-danger);
-            color: white;
-        }
-
-        .completion-checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .accountability-alert {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid var(--accent-warning);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
+        
         @media (max-width: 768px) {
-            .matrix-table {
-                font-size: 0.85rem;
-            }
-
-            .role-buttons {
-                flex-direction: column;
-            }
+            .domain-tabs { flex-direction: column; }
+            .matrix-table { font-size: 11px; }
+            .matrix-table th, .matrix-table td { padding: 8px; }
         }
     </style>
 </head>
@@ -381,359 +202,385 @@
     <div class="container">
         <header>
             <div>
-                <h1>RACI Matrix Builder</h1>
-                <p style="color: var(--text-secondary); margin-top: 5px;">Clear ownership and accountability for every deliverable</p>
-                <p style="font-style: italic; color: var(--text-secondary); font-size: 0.85rem; margin-top: 3px;">Role clarity framework - RACI Accountability Model (Responsible, Accountable, Consulted, Informed)</p>
+                <h1>RACI Matrix</h1>
+                <p class="subtitle">Responsibility Assignment Matrix</p>
             </div>
-            <div class="header-controls">
-                <button class="btn" onclick="toggleTheme()">☀️ Light Mode</button>
-                <button class="btn" onclick="saveAll()">💾 Save All</button>
+            <div class="controls">
+                <button class="btn" onclick="toggleTheme()">🌙 Dark Mode</button>
                 <button class="btn" onclick="exportData()">📊 Export</button>
-                <a href="executive-command-center.html" class="btn">← Dashboard</a>
+                <a href="index.html" class="btn">← Dashboard</a>
             </div>
         </header>
 
-        <!-- RACI Guide -->
-        <div class="raci-guide">
-            <h2 class="section-header">RACI Framework Guide</h2>
-            <div class="raci-grid">
-                <div class="raci-item raci-r">
-                    <div class="raci-letter">R - Responsible</div>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Does the work. Can be multiple people. In the trenches executing.</p>
-                </div>
-                <div class="raci-item raci-a">
-                    <div class="raci-letter">A - Accountable</div>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Owns the outcome. Only ONE person per task. Has veto power.</p>
-                </div>
-                <div class="raci-item raci-c">
-                    <div class="raci-letter">C - Consulted</div>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Provides input. Two-way communication. Subject matter experts.</p>
-                </div>
-                <div class="raci-item raci-i">
-                    <div class="raci-letter">I - Informed</div>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Kept in the loop. One-way communication. Stakeholder management.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Domain Tabs -->
-        <div class="domain-tabs">
-            <button class="tab active" onclick="switchTab('builders')">Builder's Conference</button>
-            <button class="tab" onclick="switchTab('professional')">Professional/Career</button>
-            <button class="tab" onclick="switchTab('chess')">Chess Not Checkers</button>
-        </div>
-
-        <!-- Builder's Conference -->
-        <div id="builders" class="domain-content active">
-            <div class="team-section">
-                <h3 class="section-header">Team Members</h3>
-                <div class="team-list" id="bc-team-list"></div>
-                <div class="add-member-form">
-                    <input type="text" id="bc-new-member" placeholder="Team member name">
-                    <button class="btn-add" onclick="addTeamMember('builders')">+ Add Member</button>
-                </div>
-            </div>
-
-            <div class="team-section">
-                <h3 class="section-header">Tasks & Deliverables</h3>
-                <button class="btn-add" onclick="addTask('builders')">+ Add Task</button>
-                <table class="matrix-table" id="bc-matrix"></table>
-            </div>
-
-            <div class="accountability-alert" id="bc-alert" style="display: none;">
-                <strong>⚠️ Accountability Alert:</strong>
-                <div id="bc-alert-text"></div>
-            </div>
-        </div>
-
-        <!-- Professional/Career -->
-        <div id="professional" class="domain-content">
-            <div class="team-section">
-                <h3 class="section-header">Team Members</h3>
-                <div class="team-list" id="prof-team-list"></div>
-                <div class="add-member-form">
-                    <input type="text" id="prof-new-member" placeholder="Team member name">
-                    <button class="btn-add" onclick="addTeamMember('professional')">+ Add Member</button>
-                </div>
-            </div>
-
-            <div class="team-section">
-                <h3 class="section-header">Tasks & Deliverables</h3>
-                <button class="btn-add" onclick="addTask('professional')">+ Add Task</button>
-                <table class="matrix-table" id="prof-matrix"></table>
-            </div>
-
-            <div class="accountability-alert" id="prof-alert" style="display: none;">
-                <strong>⚠️ Accountability Alert:</strong>
-                <div id="prof-alert-text"></div>
-            </div>
-        </div>
-
-        <!-- Chess Not Checkers -->
-        <div id="chess" class="domain-content">
-            <div class="team-section">
-                <h3 class="section-header">Team Members</h3>
-                <div class="team-list" id="cnc-team-list"></div>
-                <div class="add-member-form">
-                    <input type="text" id="cnc-new-member" placeholder="Team member name">
-                    <button class="btn-add" onclick="addTeamMember('chess')">+ Add Member</button>
-                </div>
-            </div>
-
-            <div class="team-section">
-                <h3 class="section-header">Tasks & Deliverables</h3>
-                <button class="btn-add" onclick="addTask('chess')">+ Add Task</button>
-                <table class="matrix-table" id="cnc-matrix"></table>
-            </div>
-
-            <div class="accountability-alert" id="cnc-alert" style="display: none;">
-                <strong>⚠️ Accountability Alert:</strong>
-                <div id="cnc-alert-text"></div>
-            </div>
-        </div>
+        <div class="domain-tabs" id="domain-tabs"></div>
+        <div id="domains-container"></div>
     </div>
 
     <script>
         const STORAGE_KEY = 'raci_matrix';
+        let currentDomain = 'builders';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            initDomains();
+            renderAllDomains();
+        });
+
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.querySelector('.controls .btn');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                btn.textContent = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️ Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function loadTheme() {
+            const theme = localStorage.getItem('theme');
+            const btn = document.querySelector('.controls .btn');
+            if (theme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️ Light Mode';
+            }
+        }
+
+        function initDomains() {
+            const domains = getAvailableDomains();
+            const tabsContainer = document.getElementById('domain-tabs');
+            const domainsContainer = document.getElementById('domains-container');
+            
+            tabsContainer.innerHTML = '';
+            domainsContainer.innerHTML = '';
+            
+            domains.forEach((domain, index) => {
+                // Create tab
+                const tab = document.createElement('button');
+                tab.className = index === 0 ? 'tab active' : 'tab';
+                tab.textContent = domain.label;
+                tab.onclick = () => switchTab(domain.id);
+                tabsContainer.appendChild(tab);
+                
+                // Create content
+                const content = document.createElement('div');
+                content.id = domain.id;
+                content.className = index === 0 ? 'domain-content active' : 'domain-content';
+                content.innerHTML = `
+                    <!-- RACI Legend -->
+                    <div class="raci-legend">
+                        <h3 class="section-header">RACI Matrix Guide</h3>
+                        <div class="legend-grid">
+                            <div class="legend-item">
+                                <span class="legend-badge">R</span>
+                                <div class="legend-desc">
+                                    <strong>Responsible</strong>
+                                    Performs the work to complete the task
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-badge">A</span>
+                                <div class="legend-desc">
+                                    <strong>Accountable</strong>
+                                    Ultimate decision maker and owner
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-badge">C</span>
+                                <div class="legend-desc">
+                                    <strong>Consulted</strong>
+                                    Provides input and feedback
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-badge">I</span>
+                                <div class="legend-desc">
+                                    <strong>Informed</strong>
+                                    Kept updated on progress
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Overview -->
+                    <div class="stats-overview">
+                        <h3 class="section-header">${domain.label} - Overview</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="${domain.id}-team-count">0</div>
+                                <div class="stat-label">Team Members</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="${domain.id}-task-count">0</div>
+                                <div class="stat-label">Total Tasks</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="${domain.id}-completed-count">0</div>
+                                <div class="stat-label">Completed</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="${domain.id}-progress">0%</div>
+                                <div class="stat-label">Progress</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-section">
+                        <h3 class="section-header">Team Members</h3>
+                        <div class="team-list" id="${domain.id}-team-list"></div>
+                        <div class="add-member-form">
+                            <input type="text" id="${domain.id}-new-member" placeholder="Team member name">
+                            <button class="btn-add" onclick="addTeamMember('${domain.id}')">+ Add Member</button>
+                        </div>
+                    </div>
+                    <div class="team-section">
+                        <h3 class="section-header">Tasks & Deliverables</h3>
+                        <button class="btn-add" onclick="addTask('${domain.id}')">+ Add Task</button>
+                        <table class="matrix-table" id="${domain.id}-matrix"></table>
+                    </div>
+                    <div class="accountability-alert" id="${domain.id}-alert" style="display: none;">
+                        <strong>⚠️ Accountability Alert:</strong>
+                        <div id="${domain.id}-alert-text"></div>
+                    </div>
+                `;
+                domainsContainer.appendChild(content);
+            });
+            
+            if (domains.length > 0) {
+                currentDomain = domains[0].id;
+            }
+        }
+
+        function getAvailableDomains() {
+            const defaultDomains = [
+                { id: 'builders', label: "Builder's Conference" },
+                { id: 'professional', label: 'Professional/Career' },
+                { id: 'chess', label: 'Chess Not Checkers' }
+            ];
+            
+            // Get custom domains from dashboard
+            const customDomains = JSON.parse(localStorage.getItem('customDomains') || '[]');
+            
+            return [...defaultDomains, ...customDomains.map(d => ({
+                id: d.id,
+                label: d.label || d.name
+            }))];
+        }
+
+        function switchTab(domainId) {
+            currentDomain = domainId;
+            document.querySelectorAll('.domain-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(domainId).classList.add('active');
+            event.target.classList.add('active');
+        }
 
         function loadData() {
             const saved = localStorage.getItem(STORAGE_KEY);
-            return saved ? JSON.parse(saved) : {
-                builders: { team: [], tasks: [] },
-                professional: { team: [], tasks: [] },
-                chess: { team: [], tasks: [] }
-            };
+            if (!saved) {
+                const domains = getAvailableDomains();
+                const data = {};
+                domains.forEach(d => {
+                    data[d.id] = { team: [], tasks: [] };
+                });
+                return data;
+            }
+            return JSON.parse(saved);
         }
 
         function saveData(data) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
 
-        function switchTab(domain) {
-            document.querySelectorAll('.domain-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(domain).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function addTeamMember(domain) {
-            const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
-            const input = document.getElementById(`${prefix}-new-member`);
+        function addTeamMember(domainId) {
+            const input = document.getElementById(`${domainId}-new-member`);
             const name = input.value.trim();
-            
             if (name) {
                 const data = loadData();
-                data[domain].team.push(name);
+                if (!data[domainId]) data[domainId] = { team: [], tasks: [] };
+                data[domainId].team.push(name);
                 saveData(data);
                 input.value = '';
-                renderDomain(domain);
+                renderDomain(domainId);
             }
         }
 
-        function removeTeamMember(domain, index) {
+        function removeTeamMember(domainId, index) {
             const data = loadData();
-            data[domain].team.splice(index, 1);
+            data[domainId].team.splice(index, 1);
             saveData(data);
-            renderDomain(domain);
+            renderDomain(domainId);
         }
 
-        function addTask(domain) {
+        function addTask(domainId) {
             const data = loadData();
-            const task = {
+            if (!data[domainId]) data[domainId] = { team: [], tasks: [] };
+            data[domainId].tasks.push({
                 name: '',
-                description: '',
-                dueDate: '',
+                status: 'not-started',
                 completed: false,
-                assignments: {}
-            };
-            data[domain].tasks.push(task);
-            saveData(data);
-            renderDomain(domain);
-        }
-
-        function deleteTask(domain, index) {
-            const data = loadData();
-            data[domain].tasks.splice(index, 1);
-            saveData(data);
-            renderDomain(domain);
-        }
-
-        function updateTask(domain, index, field, value) {
-            const data = loadData();
-            data[domain].tasks[index][field] = value;
-            saveData(data);
-        }
-
-        function toggleRole(domain, taskIndex, member, role) {
-            const data = loadData();
-            if (!data[domain].tasks[taskIndex].assignments[member]) {
-                data[domain].tasks[taskIndex].assignments[member] = [];
-            }
-            
-            const roles = data[domain].tasks[taskIndex].assignments[member];
-            const roleIndex = roles.indexOf(role);
-            
-            if (roleIndex > -1) {
-                roles.splice(roleIndex, 1);
-            } else {
-                // Only one 'A' per task
-                if (role === 'A') {
-                    Object.keys(data[domain].tasks[taskIndex].assignments).forEach(m => {
-                        const idx = data[domain].tasks[taskIndex].assignments[m].indexOf('A');
-                        if (idx > -1) {
-                            data[domain].tasks[taskIndex].assignments[m].splice(idx, 1);
-                        }
-                    });
-                }
-                roles.push(role);
-            }
-            
-            saveData(data);
-            renderDomain(domain);
-            checkAccountability(domain);
-        }
-
-        function checkAccountability(domain) {
-            const data = loadData();
-            const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
-            const alerts = [];
-
-            // Check for tasks without Accountable person
-            data[domain].tasks.forEach((task, i) => {
-                const hasAccountable = Object.values(task.assignments).some(roles => roles.includes('A'));
-                if (!hasAccountable && task.name) {
-                    alerts.push(`Task "${task.name}" has no Accountable person`);
-                }
+                responsible: {},
+                accountable: {},
+                consulted: {},
+                informed: {}
             });
+            saveData(data);
+            renderDomain(domainId);
+        }
 
-            // Check if you're responsible for too many tasks
-            const yourTasks = data[domain].tasks.filter(task => 
-                task.assignments['You'] && task.assignments['You'].includes('R')
-            ).length;
+        function deleteTask(domainId, index) {
+            if (!confirm('Delete this task?')) return;
+            const data = loadData();
+            data[domainId].tasks.splice(index, 1);
+            saveData(data);
+            renderDomain(domainId);
+        }
 
-            if (yourTasks > 5) {
-                alerts.push(`You are Responsible for ${yourTasks} tasks - consider delegating`);
-            }
+        function updateTask(domainId, taskIndex, field, value) {
+            const data = loadData();
+            data[domainId].tasks[taskIndex][field] = value;
+            saveData(data);
+        }
 
-            const alertDiv = document.getElementById(`${prefix}-alert`);
-            const alertText = document.getElementById(`${prefix}-alert-text`);
+        function toggleRaci(domainId, taskIndex, member, role) {
+            const data = loadData();
+            const task = data[domainId].tasks[taskIndex];
+            task[role][member] = !task[role][member];
+            saveData(data);
+            renderDomain(domainId);
+        }
+
+        function renderDomain(domainId) {
+            const data = loadData();
+            if (!data[domainId]) data[domainId] = { team: [], tasks: [] };
+            const domainData = data[domainId];
             
-            if (alerts.length > 0) {
+            // Update statistics
+            const teamCount = domainData.team.length;
+            const taskCount = domainData.tasks.length;
+            const completedCount = domainData.tasks.filter(t => t.completed).length;
+            const progress = taskCount > 0 ? Math.round((completedCount / taskCount) * 100) : 0;
+            
+            const teamCountEl = document.getElementById(`${domainId}-team-count`);
+            const taskCountEl = document.getElementById(`${domainId}-task-count`);
+            const completedCountEl = document.getElementById(`${domainId}-completed-count`);
+            const progressEl = document.getElementById(`${domainId}-progress`);
+            
+            if (teamCountEl) teamCountEl.textContent = teamCount;
+            if (taskCountEl) taskCountEl.textContent = taskCount;
+            if (completedCountEl) completedCountEl.textContent = completedCount;
+            if (progressEl) progressEl.textContent = `${progress}%`;
+            
+            // Render team
+            const teamList = document.getElementById(`${domainId}-team-list`);
+            teamList.innerHTML = domainData.team.map((member, i) => `
+                <div class="team-member">
+                    ${member}
+                    <span class="remove-member" onclick="removeTeamMember('${domainId}', ${i})">×</span>
+                </div>
+            `).join('');
+            
+            // Check for accountability issues
+            const tasksWithoutAccountable = domainData.tasks.filter(task => {
+                return !Object.values(task.accountable).some(v => v);
+            });
+            
+            const alertDiv = document.getElementById(`${domainId}-alert`);
+            const alertText = document.getElementById(`${domainId}-alert-text`);
+            
+            if (tasksWithoutAccountable.length > 0) {
                 alertDiv.style.display = 'block';
-                alertText.innerHTML = alerts.map(a => `<div>• ${a}</div>`).join('');
+                alertText.innerHTML = `${tasksWithoutAccountable.length} task(s) have no one marked as Accountable. Every task must have exactly one person Accountable.`;
             } else {
                 alertDiv.style.display = 'none';
             }
+            
+            // Render matrix
+            const matrix = document.getElementById(`${domainId}-matrix`);
+            if (domainData.tasks.length === 0) {
+                matrix.innerHTML = '<tr><td colspan="100%" style="text-align: center; padding: 20px; color: var(--text-muted);">No tasks yet. Click "+ Add Task" to get started.</td></tr>';
+                return;
+            }
+            
+            matrix.innerHTML = `
+                <thead>
+                    <tr>
+                        <th style="min-width: 50px;">Done</th>
+                        <th style="min-width: 200px;">Task</th>
+                        ${domainData.team.map(member => `
+                            <th colspan="4" style="text-align: center; border-left: 1px solid var(--border-color);">
+                                ${member}
+                                <div style="display: flex; gap: 4px; justify-content: center; margin-top: 4px; font-size: 9px;">
+                                    <span>R</span><span>A</span><span>C</span><span>I</span>
+                                </div>
+                            </th>
+                        `).join('')}
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${domainData.tasks.map((task, taskIndex) => `
+                        <tr style="${task.completed ? 'opacity: 0.6;' : ''}">
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="status-checkbox"
+                                    ${task.completed ? 'checked' : ''}
+                                    onchange="toggleCompleted('${domainId}', ${taskIndex}, this.checked)">
+                            </td>
+                            <td>
+                                <input type="text" 
+                                       value="${task.name}" 
+                                       onchange="updateTask('${domainId}', ${taskIndex}, 'name', this.value)"
+                                       placeholder="Task name"
+                                       style="${task.completed ? 'text-decoration: line-through;' : ''}">
+                            </td>
+                            ${domainData.team.map(member => `
+                                <td class="raci-cell"><input type="checkbox" class="raci-checkbox" 
+                                    ${task.responsible[member] ? 'checked' : ''}
+                                    onchange="toggleRaci('${domainId}', ${taskIndex}, '${member}', 'responsible')"></td>
+                                <td class="raci-cell"><input type="checkbox" class="raci-checkbox"
+                                    ${task.accountable[member] ? 'checked' : ''}
+                                    onchange="toggleRaci('${domainId}', ${taskIndex}, '${member}', 'accountable')"></td>
+                                <td class="raci-cell"><input type="checkbox" class="raci-checkbox"
+                                    ${task.consulted[member] ? 'checked' : ''}
+                                    onchange="toggleRaci('${domainId}', ${taskIndex}, '${member}', 'consulted')"></td>
+                                <td class="raci-cell"><input type="checkbox" class="raci-checkbox"
+                                    ${task.informed[member] ? 'checked' : ''}
+                                    onchange="toggleRaci('${domainId}', ${taskIndex}, '${member}', 'informed')"></td>
+                            `).join('')}
+                            <td>
+                                <button class="delete-task" onclick="deleteTask('${domainId}', ${taskIndex})">🗑️</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
         }
 
-        function renderDomain(domain) {
+        function toggleCompleted(domainId, taskIndex, completed) {
             const data = loadData();
-            const prefix = domain === 'builders' ? 'bc' : domain === 'professional' ? 'prof' : 'cnc';
-
-            // Render team members
-            const teamList = document.getElementById(`${prefix}-team-list`);
-            teamList.innerHTML = '';
-            data[domain].team.forEach((member, index) => {
-                teamList.innerHTML += `
-                    <div class="team-member">
-                        <span>${member}</span>
-                        <button class="remove-member" onclick="removeTeamMember('${domain}', ${index})">×</button>
-                    </div>
-                `;
-            });
-
-            // Render matrix table
-            const matrix = document.getElementById(`${prefix}-matrix`);
-            let html = '<thead><tr><th>Task/Deliverable</th><th>Description</th><th>Due Date</th><th>Priority</th>';
-            
-            data[domain].team.forEach(member => {
-                html += `<th>${member}</th>`;
-            });
-            
-            html += '<th>Done</th><th>Actions</th></tr></thead><tbody>';
-
-            data[domain].tasks.forEach((task, taskIndex) => {
-                html += `<tr>
-                    <td><input type="text" value="${task.name}" 
-                              onchange="updateTask('${domain}', ${taskIndex}, 'name', this.value)"
-                              placeholder="Task name"></td>
-                    <td><textarea onchange="updateTask('${domain}', ${taskIndex}, 'description', this.value)"
-                                  placeholder="Description">${task.description}</textarea></td>
-                    <td><input type="date" value="${task.dueDate}"
-                              onchange="updateTask('${domain}', ${taskIndex}, 'dueDate', this.value)"></td>
-                    <td><select onchange="updateTask('${domain}', ${taskIndex}, 'priority', this.value)"
-                                style="width: 100%; padding: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary);">
-                        <option value="q1" ${(task.priority || 'q2') === 'q1' ? 'selected' : ''}>Q1: Urgent & Important</option>
-                        <option value="q2" ${(task.priority || 'q2') === 'q2' ? 'selected' : ''}>Q2: Important Not Urgent</option>
-                        <option value="q3" ${(task.priority || 'q2') === 'q3' ? 'selected' : ''}>Q3: Urgent Not Important</option>
-                        <option value="q4" ${(task.priority || 'q2') === 'q4' ? 'selected' : ''}>Q4: Neither</option>
-                    </select></td>`;
-                
-                data[domain].team.forEach(member => {
-                    const memberRoles = task.assignments[member] || [];
-                    html += `<td><div class="role-buttons">`;
-                    ['R', 'A', 'C', 'I'].forEach(role => {
-                        const selected = memberRoles.includes(role) ? 'selected' : '';
-                        html += `<button class="role-btn role-${role.toLowerCase()} ${selected}" 
-                                       onclick="toggleRole('${domain}', ${taskIndex}, '${member}', '${role}')">${role}</button>`;
-                    });
-                    html += `</div></td>`;
-                });
-
-                html += `<td><input type="checkbox" class="completion-checkbox" ${task.completed ? 'checked' : ''}
-                                   onchange="updateTask('${domain}', ${taskIndex}, 'completed', this.checked)"></td>
-                        <td class="task-actions">
-                            <button class="btn-small btn-delete" onclick="deleteTask('${domain}', ${taskIndex})">Delete</button>
-                        </td></tr>`;
-            });
-
-            html += '</tbody>';
-            matrix.innerHTML = html;
-
-            checkAccountability(domain);
+            data[domainId].tasks[taskIndex].completed = completed;
+            saveData(data);
+            renderDomain(domainId);
         }
 
-        function saveAll() {
-            alert('✅ All data saved successfully!');
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const btn = document.querySelector('.header-controls .btn');
-            btn.textContent = document.body.classList.contains('light-mode') ? '🌙 Dark Mode' : '☀️ Light Mode';
-            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        function renderAllDomains() {
+            const domains = getAvailableDomains();
+            domains.forEach(domain => renderDomain(domain.id));
         }
 
         function exportData() {
-            const data = loadData();
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `raci-matrix-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
+            const data = { timestamp: new Date().toISOString(), raci: loadData() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `raci-matrix-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
-
-        // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-            }
-            renderDomain('builders');
-            renderDomain('professional');
-            renderDomain('chess');
-
-            const hash = window.location.hash.substring(1);
-            if (hash && ['builders', 'professional', 'chess'].includes(hash)) {
-                switchTab(hash);
-            }
-        });
     </script>
 </body>
 </html>
